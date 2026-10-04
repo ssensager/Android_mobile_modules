@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">Lab1</string>
+    <string name="app_name">Конфигуратор пиццы (Лаба 1)</string>
+    <string name="title_configurator">Конфигуратор заказа</string>
+    <string name="label_size">Размер пиццы:</string>
+    <string name="size_small">Маленькая (300 руб)</string>
+    <string name="size_medium">Средняя (450 руб)</string>
+    <string name="size_large">Большая (600 руб)</string>
+    <string name="label_cheese">Дополнительный сыр (+100 руб)</string>
+    <string name="label_quantity">Количество:</string>
+    <string name="label_total">Итого: 0 руб</string>
+    <string name="btn_order">Оформить заказ</string>
+    <string name="title_confirm">Подтверждение заказа</string>
+    <string name="order_details_placeholder">Детали заказа...</string>
+    <string name="order_confirmed_msg">Заказ успешно подтвержден!</string>
+    <string name="btn_confirm">Подтвердить</string>
+    <string name="btn_cancel">Отмена</string>
 </resources>
