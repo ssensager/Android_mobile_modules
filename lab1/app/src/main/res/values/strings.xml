@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">Такси · Калькулятор</string>
+    <string name="title_calculator">Калькулятор поездки</string>
+    <string name="subtitle_calculator">Настройте маршрут и тариф</string>
+
+    <string name="section_breakdown">Структура стоимости</string>
+    <string name="breakdown_hint_default">Нажмите на любой сегмент шкалы для подробностей</string>
+    <string name="breakdown_selected_fmt">Выбрано: %1$s — %2$d ₽ (%3$d%% от поездки)</string>
+
+    <string name="section_car_class">Класс автомобиля</string>
+    <string name="car_economy">Эконом</string>
+    <string name="car_comfort">Комфорт</string>
+    <string name="car_comfort_plus">Комфорт+</string>
+    <string name="car_business">Бизнес</string>
+    <string name="car_minivan">Минивэн</string>
+
+    <string name="section_zone">Тарифная зона</string>
+    <string name="zone_center">Центр</string>
+    <string name="zone_city">Город</string>
+    <string name="zone_suburb">Пригород</string>
+    <string name="zone_airport">Аэропорт</string>
+
+    <string name="section_demand">Коэффициент спроса</string>
+    <string name="demand_10">1.0x</string>
+    <string name="demand_13">1.3x</string>
+    <string name="demand_16">1.6x</string>
+    <string name="demand_20">2.0x</string>
+    <string name="demand_badge_fmt">%1$s · %2$s</string>
+
+    <string name="section_options">Опции и пассажиры</string>
+    <string name="option_child_seat">Детское кресло (+150 ₽)</string>
+    <string name="option_luggage">Багаж (+100 ₽)</string>
+    <string name="option_waiting">Ожидание (+120 ₽)</string>
+
+    <string name="label_passengers">Пассажиры</string>
+    <string name="passengers_hint_fmt">До %1$d мест · доп. пассажир +40 ₽</string>
+    <string name="cd_decrease_passengers">Уменьшить число пассажиров</string>
+    <string name="cd_increase_passengers">Увеличить число пассажиров</string>
+    <string name="symbol_minus">−</string>
+    <string name="symbol_plus">+</string>
+
+    <string name="label_total_caption">Итого к оплате</string>
+    <string name="price_fmt">%1$d ₽</string>
+    <string name="summary_fmt">%1$s · %2$s · %3$d пасс.</string>
+    <string name="btn_order_taxi">Вызвать такси</string>
+
+    <!-- Второй экран подтверждения и планшетная панель -->
+    <string name="title_confirm">Подтверждение вызова</string>
+    <string name="subtitle_confirm">Проверьте детали перед отправкой машины</string>
+    <string name="label_trip_params">Параметры поездки</string>
+    <string name="label_price_details">Детализация цены</string>
+    <string name="row_car_class">Класс авто</string>
+    <string name="row_zone">Тарифная зона</string>
+    <string name="row_demand">Спрос</string>
+    <string name="row_passengers">Пассажиры</string>
+    <string name="row_options">Опции</string>
+    <string name="options_none">Без доп. опций</string>
+    <string name="row_base_fare">Подача автомобиля</string>
+    <string name="row_km_cost">Оплата за километры</string>
+    <string name="row_min_cost">Оплата за минуты</string>
+    <string name="row_options_cost">Опции и пассажиры</string>
+    <string name="row_total">Итого к оплате</string>
+
+    <string name="btn_confirm_call">Подтвердить вызов</string>
+    <string name="btn_back_edit">Изменить параметры</string>
+
+    <!-- Snackbar после подтверждения -->
+    <string name="snackbar_order_confirmed">Заказ #%1$d оформлен (%2$d ₽)</string>
+    <string name="snackbar_action_undo">Отменить</string>
+    <string name="snackbar_order_cancelled">Заказ #%1$d отменён</string>
+</resources>

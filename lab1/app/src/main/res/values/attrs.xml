@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Собственные XML-атрибуты для нашего компонента шкалы структуры цены -->
+    <declare-styleable name="PriceBreakdownView">
+        <attr name="colorBase" format="color" />
+        <attr name="colorKm" format="color" />
+        <attr name="colorMin" format="color" />
+        <attr name="colorOptions" format="color" />
+        <attr name="barHeight" format="dimension" />
+        <attr name="barCornerRadius" format="dimension" />
+        <attr name="labelTextColor" format="color" />
+        <attr name="secondaryTextColor" format="color" />
+    </declare-styleable>
+</resources>

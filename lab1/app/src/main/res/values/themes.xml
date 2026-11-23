@@ -1,0 +1,15 @@
+<resources>
+    <style name="Base.Theme.Lab1" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/taxi_primary</item>
+        <item name="colorOnPrimary">@color/taxi_on_primary</item>
+        <item name="colorSecondary">@color/taxi_accent</item>
+        <item name="colorOnSecondary">@color/taxi_on_accent</item>
+        <item name="android:colorBackground">@color/taxi_bg</item>
+        <item name="colorSurface">@color/taxi_surface</item>
+        <item name="colorOnSurface">@color/taxi_text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/taxi_text_secondary</item>
+        <item name="colorOutline">@color/taxi_outline</item>
+    </style>
+
+    <style name="Theme.Lab1" parent="Base.Theme.Lab1" />
+</resources>

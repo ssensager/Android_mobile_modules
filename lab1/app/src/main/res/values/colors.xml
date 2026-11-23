@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Светлая тема: контраст текста >= 4.5:1, границ >= 3:1 (WCAG 1.4.3 / 1.4.11) -->
+    <color name="taxi_bg">#F4F5F8</color>
+    <color name="taxi_surface">#FFFFFF</color>
+    <color name="taxi_surface_variant">#ECEEF3</color>
+    <color name="taxi_outline">#C5C9D3</color>
+
+    <color name="taxi_primary">#181A20</color>
+    <color name="taxi_on_primary">#FFFFFF</color>
+    <color name="taxi_accent">#F5B400</color>
+    <color name="taxi_on_accent">#181A20</color>
+
+    <color name="taxi_text_primary">#181A20</color>
+    <color name="taxi_text_secondary">#4B5162</color>
+
+    <!-- Цвета сегментов шкалы структуры цены -->
+    <color name="segment_base">#E0A000</color>
+    <color name="segment_km">#1D4ED8</color>
+    <color name="segment_min">#0F766E</color>
+    <color name="segment_options">#7C3AED</color>
+
+    <!-- Бейдж повышенного спроса -->
+    <color name="surge_bg">#FEF3C7</color>
+    <color name="surge_text">#92400E</color>
+</resources>

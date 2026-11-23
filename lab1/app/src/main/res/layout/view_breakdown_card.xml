@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_breakdown"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/taxi_surface"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/taxi_outline"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_breakdown_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
+            android:text="@string/section_breakdown"
+            android:textColor="@color/taxi_text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Собственный графический компонент: горизонтальная шкала структуры цены -->
+        <com.example.lab1.PriceBreakdownView
+            android:id="@+id/price_breakdown_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:barCornerRadius="12dp"
+            app:barHeight="34dp"
+            app:colorBase="@color/segment_base"
+            app:colorKm="@color/segment_km"
+            app:colorMin="@color/segment_min"
+            app:colorOptions="@color/segment_options"
+            app:labelTextColor="@color/taxi_text_primary"
+            app:secondaryTextColor="@color/taxi_text_secondary" />
+
+        <TextView
+            android:id="@+id/tv_segment_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:accessibilityLiveRegion="polite"
+            android:text="@string/breakdown_hint_default"
+            android:textColor="@color/taxi_text_secondary"
+            android:textSize="13sp" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

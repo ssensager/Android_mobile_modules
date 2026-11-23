@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Кастомные атрибуты для нашего своего компонента -->
-    <declare-styleable name="PizzaCustomView">
-        <attr name="pizzaColor" format="color" />
-        <attr name="pizzaTitle" format="string" />
-    </declare-styleable>
-</resources>
