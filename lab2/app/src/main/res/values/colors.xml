@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Светлая тема службы доставки еды (контраст текста >= 4.5:1) -->
+    <color name="food_bg">#F5F6F8</color>
+    <color name="food_surface">#FFFFFF</color>
+    <color name="food_surface_variant">#EBF3F0</color>
+    <color name="food_outline">#C4CBD3</color>
+
+    <color name="food_primary">#0E7C66</color>
+    <color name="food_on_primary">#FFFFFF</color>
+    <color name="food_secondary_container">#D6F0E8</color>
+    <color name="food_on_secondary_container">#084C3E</color>
+
+    <color name="food_text_primary">#161B22</color>
+    <color name="food_text_secondary">#4D5766</color>
+    <color name="food_discount">#15803D</color>
+    <color name="food_discount_bg">#DCFCE7</color>
+    <color name="food_error">#C62828</color>
 </resources>

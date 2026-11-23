@@ -1,3 +1,74 @@
 <resources>
-    <string name="app_name">lab2</string>
+    <string name="app_name">Доставка еды</string>
+    <string name="title_delivery">Оформление доставки</string>
+    <string name="subtitle_delivery">Сет «Домашний обед» · базовая сумма 1 290 ₽</string>
+
+    <string name="draft_restored_banner">Восстановлен сохранённый черновик формы</string>
+    <string name="btn_clear_draft">Очистить</string>
+
+    <string name="section_contacts">Контактные данные</string>
+    <string name="hint_name">Ваше имя *</string>
+    <string name="helper_name">Например: Алексей</string>
+    <string name="error_name_empty">Введите имя получателя (минимум 2 буквы)</string>
+
+    <string name="hint_phone">Телефон *</string>
+    <string name="helper_phone">Формат: +7 900 000-00-00</string>
+    <string name="error_phone_invalid">Введите корректный номер, например +7 900 123-45-67</string>
+
+    <string name="hint_address">Адрес доставки *</string>
+    <string name="helper_address">Улица, дом, квартира</string>
+    <string name="error_address_empty">Укажите улицу и номер дома (минимум 5 символов)</string>
+
+    <string name="hint_comment">Комментарий курьеру (необязательно)</string>
+    <string name="helper_comment">Подъезд, этаж, код домофона</string>
+
+    <string name="section_schedule">Дата, время и оплата</string>
+    <string name="label_delivery_datetime">Время доставки *</string>
+    <string name="datetime_not_selected">Дата и время не выбраны</string>
+    <string name="btn_pick_datetime">Выбрать дату и время</string>
+    <string name="error_datetime_required">Выберите дату и время доставки</string>
+    <string name="error_datetime_past">Время доставки не может быть в прошлом</string>
+
+    <string name="label_payment_method">Способ оплаты</string>
+    <string name="pay_card">Картой онлайн</string>
+    <string name="pay_sbp">СБП</string>
+    <string name="pay_cash">Наличными</string>
+
+    <string name="section_promo">Промокод</string>
+    <string name="hint_promo">Промокод (необязательно)</string>
+    <string name="helper_promo">Попробуйте: FOOD10, FREE или NOVSU20</string>
+    <string name="error_promo_unknown">Промокод не найден. Доступны: FOOD10, FREE, NOVSU20</string>
+    <string name="promo_applied_fmt">Скидка применена: −%1$d ₽ (%2$s)</string>
+
+    <string name="section_notifications">Уведомления о курьере</string>
+    <string name="notif_status_granted">Уведомления включены — сообщим о выезде курьера</string>
+    <string name="notif_status_denied">Уведомления выключены — заказ можно оформить и без них</string>
+    <string name="btn_request_notif">Включить уведомления</string>
+    <string name="notif_rationale_title">Зачем нужны уведомления?</string>
+    <string name="notif_rationale_body">Мы пришлём только одно уведомление, когда курьер выедет с вашим заказом. Если откажетесь, форма доставки всё равно будет работать полностью.</string>
+    <string name="notif_rationale_allow">Разрешить</string>
+    <string name="notif_rationale_later">Не сейчас</string>
+    <string name="snackbar_notif_granted">Уведомления о доставке включены</string>
+    <string name="snackbar_notif_denied">Уведомления отключены. Заказ всё равно можно оформить.</string>
+
+    <string name="label_total">К оплате</string>
+    <string name="price_fmt">%1$d ₽</string>
+    <string name="btn_check_fields">Что заполнить?</string>
+    <string name="btn_submit_order">Оформить заказ</string>
+
+    <string name="dialog_confirm_title">Подтверждение заказа</string>
+    <string name="dialog_confirm_ok">Подтвердить</string>
+    <string name="dialog_confirm_cancel">Изменить</string>
+
+    <string name="dialog_success_title">Заказ оформлен!</string>
+    <string name="dialog_success_body">Курьер привезёт заказ по адресу: %1$s (%2$s).\n\nДобавить напоминание о доставке в системный календарь?</string>
+    <string name="label_reminder_before">Напомнить заранее:</string>
+    <string name="rem_15">За 15 мин</string>
+    <string name="rem_30">За 30 мин</string>
+    <string name="rem_60">За 60 мин</string>
+    <string name="btn_add_to_calendar">Добавить в календарь</string>
+    <string name="btn_close">Готово</string>
+    <string name="snackbar_no_calendar">Приложение календаря на устройстве не найдено</string>
+    <string name="snackbar_draft_cleared">Черновик очищен</string>
+    <string name="calendar_title_fmt">Доставка еды · %1$s</string>
 </resources>
