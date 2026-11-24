@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">МедКонтроль</string>
+    <string name="app_subtitle">Контроль совместимости и приёма</string>
+
+    <string name="menu_rules">Справочник правил</string>
+    <string name="menu_notifications">Уведомления</string>
+
+    <string name="section_medicines">Моя аптечка</string>
+    <string name="section_conflicts_detail">Проверка совместимости</string>
+    <string name="section_reminders">Напоминание о приёме</string>
+    <string name="section_intakes">История и план приёмов</string>
+
+    <string name="banner_high_title">Опасное сочетание препаратов</string>
+    <string name="banner_medium_title">Требуется осторожность</string>
+    <string name="banner_low_title">Незначительное взаимодействие</string>
+    <string name="banner_safe_title">Конфликтов не обнаружено</string>
+    <string name="banner_safe_desc">Все добавленные препараты совместимы по действующим веществам.</string>
+
+    <string name="severity_high_label">Высокий риск</string>
+    <string name="severity_medium_label">Средний риск</string>
+    <string name="severity_low_label">Низкий риск</string>
+    <string name="severity_safe_label">Совместим</string>
+
+    <string name="action_add_medicine">Добавить препарат</string>
+    <string name="action_add_short">Добавить</string>
+    <string name="action_edit">Изменить</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_undo">Отменить</string>
+    <string name="action_mark_taken">Принято</string>
+    <string name="action_mark_pending">Вернуть в план</string>
+    <string name="action_schedule_reminder">Запланировать напоминание</string>
+    <string name="action_test_5s">Тест через 5 сек</string>
+    <string name="action_add_intake_now">Отметить приём сейчас</string>
+    <string name="action_allow_notifications">Разрешить</string>
+    <string name="action_later">Позже</string>
+
+    <string name="empty_title">Аптечка пока пуста</string>
+    <string name="empty_desc">Добавьте препараты, которые принимаете. Приложение проверит действующие вещества на несовместимость и напомнит о приёме вовремя.</string>
+    <string name="empty_intakes">Приёмов пока нет. Запланируйте напоминание или отметьте приём вручную.</string>
+
+    <string name="dialog_add_title">Новый препарат</string>
+    <string name="dialog_edit_title">Редактирование препарата</string>
+    <string name="hint_medicine_name">Название препарата</string>
+    <string name="hint_dosage">Дозировка (например, 400 мг)</string>
+    <string name="hint_substance">Действующее вещество</string>
+    <string name="hint_schedule">Расписание (например, 09:00 и 21:00)</string>
+    <string name="hint_notes">Комментарий (после еды, курс)</string>
+    <string name="error_name_required">Введите название препарата</string>
+    <string name="error_dosage_required">Укажите дозировку</string>
+    <string name="error_substance_required">Выберите действующее вещество</string>
+
+    <string name="delete_dialog_title">Удалить препарат?</string>
+    <string name="delete_dialog_message">Удалить «%1$s»? Связанные записи о приёмах (%2$d шт.) также будут удалены каскадно.</string>
+    <string name="snackbar_deleted">Препарат «%1$s» и его приёмы удалены</string>
+    <string name="snackbar_restored">Препарат и история приёмов восстановлены</string>
+
+    <string name="notification_channel_name">Напоминания о приёме</string>
+    <string name="notification_channel_desc">Своевременные напоминания принять назначенный препарат</string>
+    <string name="notification_title_format">Пора принять: %1$s</string>
+    <string name="notification_body_format">%1$s · %2$s. Нажмите «Принято», чтобы отметить приём без открытия приложения.</string>
+
+    <string name="permission_rationale_title">Разрешить напоминания?</string>
+    <string name="permission_rationale_message">Разрешение нужно только для напоминаний о приёме лекарств по расписанию. Если отказаться, база препаратов и проверка совместимости продолжат работать без ограничений.</string>
+    <string name="permission_denied_banner">Уведомления отключены. Напоминания сохраняются в списке приёмов, но не появятся в шторке.</string>
+    <string name="permission_granted_toast">Уведомления включены</string>
+
+    <string name="reminder_delay_hint">Задержка напоминания (в минутах)</string>
+    <string name="reminder_scheduled_format">Напоминание запланировано через %1$s</string>
+    <string name="reminder_saved_without_perm">Приём добавлен в план (включите уведомления, чтобы получать сигналы)</string>
+    <string name="delay_5s">5 сек (тест)</string>
+    <string name="delay_1m">1 мин</string>
+    <string name="delay_15m">15 мин</string>
+    <string name="delay_60m">60 мин</string>
+
+    <string name="rules_dialog_title">Правила несовместимости в базе</string>
+    <string name="rules_dialog_close">Понятно</string>
+
+    <string name="detail_title">Карточка препарата</string>
+    <string name="detail_safe_desc">Этот препарат сейчас не конфликтует с остальными средствами в аптечке.</string>
+    <string name="status_taken">Принято</string>
+    <string name="status_planned">Ожидает</string>
+    <string name="intake_summary_format">Приёмы: %1$d из %2$d</string>
+    <string name="schedule_empty">Расписание не указано</string>
+</resources>

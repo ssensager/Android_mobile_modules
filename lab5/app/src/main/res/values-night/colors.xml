@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Тёплая медицинская палитра для тёмной темы -->
+    <color name="brand_primary">#FB923C</color>
+    <color name="brand_on_primary">#431407</color>
+    <color name="brand_primary_container">#7C2D12</color>
+    <color name="brand_on_primary_container">#FFEDD5</color>
+
+    <color name="brand_secondary">#2DD4BF</color>
+    <color name="brand_on_secondary">#042F2E</color>
+    <color name="brand_secondary_container">#115E59</color>
+    <color name="brand_on_secondary_container">#CCFBF1</color>
+
+    <color name="surface_bg">#141211</color>
+    <color name="surface_card">#1E1B19</color>
+    <color name="surface_subtle">#292524</color>
+    <color name="stroke_subtle">#3B3430</color>
+
+    <color name="text_primary">#F5F5F4</color>
+    <color name="text_secondary">#A8A29E</color>
+
+    <!-- Контрастная градация серьёзности для тёмного фона -->
+    <color name="risk_high_fg">#FCA5A5</color>
+    <color name="risk_high_bg">#351414</color>
+    <color name="risk_high_border">#7F1D1D</color>
+
+    <color name="risk_medium_fg">#FCD34D</color>
+    <color name="risk_medium_bg">#33240D</color>
+    <color name="risk_medium_border">#78350F</color>
+
+    <color name="risk_low_fg">#7DD3FC</color>
+    <color name="risk_low_bg">#0E2738</color>
+    <color name="risk_low_border">#075985</color>
+
+    <color name="risk_safe_fg">#5EEAD4</color>
+    <color name="risk_safe_bg">#0E2D2A</color>
+    <color name="risk_safe_border">#115E59</color>
+
+    <color name="gauge_track">#332E2B</color>
+</resources>
