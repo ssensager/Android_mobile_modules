@@ -28,8 +28,8 @@ import androidx.core.view.WindowCompat
 import com.example.lab3.data.ThemeMode
 
 /**
- * Дополнительные семантические цвета финансов (доход, расход, 4 категории),
- * чтобы ни один компонент UI не использовал захардкоженные литералы Color(...).
+ * Вынес дополнительные цвета для доходов, расходов и 4 категорий сюда,
+ * чтобы в самих экранах нигде не писать цвета напрямую.
  */
 @Immutable
 data class FinanceExtendedColors(
@@ -68,7 +68,7 @@ private val DarkFinanceExtended = FinanceExtendedColors(
 
 val LocalFinanceColors = staticCompositionLocalOf { LightFinanceExtended }
 
-// Светлая палитра: спокойный банковский синий (вызывает доверие) + высокий контраст >= 4.5:1
+// Светлая палитра со спокойным синим акцентом и хорошей читаемостью цифр
 private val LightColors = lightColorScheme(
     primary = Color(0xFF1B56B3),
     onPrimary = Color(0xFFFFFFFF),
@@ -88,7 +88,7 @@ private val LightColors = lightColorScheme(
     outlineVariant = Color(0xFFDDE3EC)
 )
 
-// Тёмная палитра: осознанные графитовые поверхности (#111418, НЕ чистый чёрный #000000!)
+// Тёмная палитра: взял мягкий графитовый фон #111418 вместо чистого чёрного, чтобы глаза не уставали
 private val DarkColors = darkColorScheme(
     primary = Color(0xFF8AB4F8),
     onPrimary = Color(0xFF082454),
@@ -160,7 +160,7 @@ fun FinanceTheme(
     }
 
     val context = LocalContext.current
-    // Бонус +1: динамические цвета Material You на Android 12+ с корректным запасным вариантом
+    // На Android 12+ умею брать динамические цвета из обоев системы, иначе использую свою палитру
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -171,7 +171,7 @@ fun FinanceTheme(
 
     val extendedColors = if (isDark) DarkFinanceExtended else LightFinanceExtended
 
-    // Автоматически подстраиваем цвет иконок строки состояния под светлую/тёмную тему
+    // Подстраиваю цвет иконок строки состояния под текущую тему
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

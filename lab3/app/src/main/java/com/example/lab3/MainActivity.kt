@@ -28,9 +28,9 @@ import com.example.lab3.ui.screens.TransactionDetailScreen
 import com.example.lab3.ui.theme.FinanceTheme
 
 /**
- * Точка входа лабораторной работы №3 (Jetpack Compose, Kotlin).
- * Управляет корневым состоянием экрана (состояние данных, выбранная операция,
- * режим темы и Material You) и передаёт его вниз в @Composable-экраны.
+ * Точка входа приложения на Jetpack Compose.
+ * Храню здесь верхнеуровневое состояние (режим темы, Material You, текущее состояние данных
+ * и выбранную операцию) и передаю всё вниз в экранные функции.
  */
 class MainActivity : ComponentActivity() {
 
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 val showSeparateDetailScreen = !isWide && selectedTx != null
 
-                // Бонус +1: плавный анимированный переход между обзорным экраном и деталями операции
+                // Делаю плавный переход со сдвигом между списком и экраном деталей
                 AnimatedContent(
                     targetState = showSeparateDetailScreen,
                     transitionSpec = {

@@ -14,14 +14,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import java.text.NumberFormat
 import java.util.Locale
 
-// Режим темы, который пользователь может переключать вручную (Бонус +1)
+// Режим оформления, который можно переключать вручную прямо в шапке
 enum class ThemeMode(val title: String) {
     SYSTEM("Авто"),
     LIGHT("Светлая"),
     DARK("Тёмная")
 }
 
-// Три обязательных состояния основного экрана по ТЗ
+// Три состояния главного экрана: загрузка, пустой список и заполненные данные
 sealed interface FinanceUiState {
     data object Loading : FinanceUiState
     data object Empty : FinanceUiState
@@ -65,8 +65,8 @@ data class TransactionItem(
 )
 
 /**
- * Простая обёртка над SharedPreferences для сохранения выбранной темы
- * и настройки Material You между запусками приложения (Бонус +1).
+ * Сохраняю выбранную тему и переключатель Material You в SharedPreferences,
+ * чтобы выбор не сбрасывался после перезапуска.
  */
 class ThemePreferences(context: Context) {
     private val prefs = context.getSharedPreferences("lab3_theme_prefs", Context.MODE_PRIVATE)
@@ -88,7 +88,7 @@ class ThemePreferences(context: Context) {
 }
 
 /**
- * Демонстрационные данные (заглушки в коде, как требует ТЗ работы №3).
+ * Заглушки с демонстрационными счетами и операциями, чтобы проверять интерфейс без БД.
  */
 object FinanceSampleData {
 

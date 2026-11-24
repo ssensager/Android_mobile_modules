@@ -66,10 +66,9 @@ import com.example.lab3.ui.theme.FinanceTheme
 import com.example.lab3.ui.theme.LocalFinanceColors
 
 /**
- * Главный обзорный экран «ФинПульс» с поднятым состоянием (state hoisting).
- * Адаптируется под WindowWidthSizeClass:
- * - Compact (телефон): вертикальный LazyColumn;
- * - Medium / Expanded (планшет): две колонки — слева аналитика и счета, справа операции и детали.
+ * Главный обзорный экран «ФинПульс».
+ * Поднимаю всё состояние наверх в MainActivity, а здесь подстраиваю вёрстку под ширину окна:
+ * на телефоне — одна колонка, на планшете — две колонки сразу с деталями выбранной операции.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,7 +143,7 @@ fun FinanceOverviewScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Панель переключения трёх обязательных состояний экрана (для удобной проверки на защите)
+            // Переключатель состояний экрана (Наполнено / Загрузка / Пусто) для удобной демонстрации
             StateSwitcherRow(
                 currentState = uiState,
                 onSelect = onSelectStateTab
@@ -225,7 +224,7 @@ private fun CompactOverviewLayout(
     content: FinanceUiState.Content,
     onTransactionClick: (TransactionItem) -> Unit
 ) {
-    // Используем LazyColumn, чтобы элементы списка операций создавались лениво
+    // Беру LazyColumn вместо обычного Column со скроллом, чтобы карточки создавались только по мере прокрутки
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
