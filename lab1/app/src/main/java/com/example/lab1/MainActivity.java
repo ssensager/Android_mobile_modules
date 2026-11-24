@@ -23,19 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Главный экран калькулятора поездки в такси.
- * По ТЗ экран сам НЕ хранит данные заказа — он только передаёт действия пользователя
- * в MainViewModel и подписывается на LiveData, чтобы отобразить актуальное состояние.
- * Поддерживает три макета: телефон (портрет), телефон (альбом) и планшет (sw600dp, два экрана сразу).
+ * Главный экран калькулятора такси.
+ * Параметры поездки в полях Activity не храню — всё уходит в MainViewModel,
+ * а здесь я только подписываюсь на LiveData и обновляю интерфейс.
  */
 public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
 
-    // Флаг нужен, чтобы при программной синхронизации чипов из LiveData
-    // не срабатывали повторно слушатели кликов
+    // Ставлю этот флаг на время программной синхронизации чипов, чтобы слушатели не сработали по кругу
     private boolean isSyncingUi = false;
-    // Защита от двойного нажатия на кнопку вызова такси (чтобы не открыть два экрана подряд)
+    // Защита от быстрого двойного клика по кнопке вызова, чтобы не открылось два экрана подряд
     private boolean isLaunchingConfirm = false;
 
     private View mainRoot;
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvOrderSummary;
     private MaterialButton btnOrder;
 
-    // Поля правой панели для планшетного макета (sw600dp); на телефоне они равны null
+    // Правая панель есть только в планшетной разметке sw600dp
     private boolean isTabletTwoPane = false;
     private TextView tvReceiptCar;
     private TextView tvReceiptZone;
@@ -99,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             R.id.btn_demand_20
     };
 
-    // Контракт навигации с возвратом результата со второго экрана ConfirmActivity
+    // Жду результат со второго экрана ConfirmActivity через ActivityResultContracts
     private final ActivityResultLauncher<Intent> confirmLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -120,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Получаем ViewModel — Android вернёт тот же экземпляр после поворота экрана
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         bindViews();
@@ -162,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         tvOrderSummary = findViewById(R.id.tv_order_summary);
         btnOrder = findViewById(R.id.btn_order);
 
-        // Проверяем, загружен ли планшетный двухпанельный макет (sw600dp)
+        // Если в разметке нашлась правая панель, значит экран открылся на планшете
         isTabletTwoPane = findViewById(R.id.tablet_confirm_pane) != null;
         if (isTabletTwoPane) {
             tvReceiptCar = findViewById(R.id.tv_receipt_car);
@@ -178,10 +175,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Учитываем системные отступы (строка состояния сверху и панель навигации снизу),
-     * чтобы на Android 15+ (edge-to-edge) шапка и нижняя кнопка не перекрывались.
-     */
+    // Добавляю системные отступы сверху и снизу, чтобы статус-бар и панель навигации не залезали на кнопки
     private void applySystemWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(mainRoot, (v, windowInsets) -> {
             Insets bars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -228,14 +222,13 @@ public class MainActivity extends AppCompatActivity {
         btnPassengersMinus.setOnClickListener(v -> viewModel.decrementPassengers());
         btnPassengersPlus.setOnClickListener(v -> viewModel.incrementPassengers());
 
-        // Бонус +1: тап по сегменту шкалы выделяет его и показывает точную сумму и долю
         priceBreakdownView.setOnSegmentSelectedListener(
                 segmentIndex -> viewModel.toggleSegmentSelection(segmentIndex)
         );
 
         btnOrder.setOnClickListener(v -> {
             if (isTabletTwoPane) {
-                // На планшете оба экрана видны сразу: подтверждаем вызов прямо из правой панели
+                // На планшете экран подтверждения уже открыт справа, поэтому подтверждаю сразу
                 int orderId = viewModel.generateNextOrderId();
                 int total = viewModel.getCurrentBreakdown().totalCost;
                 viewModel.onOrderConfirmed(orderId);
@@ -256,10 +249,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    /**
-     * Единственный метод отрисовки экрана из состояния ViewModel.
-     * Срабатывает мгновенно в том же кадре при любом изменении параметров и после поворота экрана.
-     */
+    // Обновляю все элементы экрана из одного метода, чтобы после любого клика или поворота ничего не отставало
     private void renderUi(TaxiOrderState state, PriceBreakdown breakdown) {
         if (state == null || breakdown == null) return;
 
@@ -267,7 +257,6 @@ public class MainActivity extends AppCompatActivity {
         TaxiTariffs.TariffZone zone = TaxiTariffs.TARIFF_ZONES[state.zoneIndex];
         TaxiTariffs.DemandLevel demand = TaxiTariffs.DEMAND_LEVELS[state.demandIndex];
 
-        // Синхронизируем выбранные чипы и кнопки с состоянием ViewModel
         isSyncingUi = true;
         cgCarClass.check(carChipIds[state.carClassIndex]);
         cgZone.check(zoneChipIds[state.zoneIndex]);
@@ -277,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
         chipWaiting.setChecked(state.hasWaiting);
         isSyncingUi = false;
 
-        // Обновляем подписи и подсказки
         tvDemandBadge.setText(getString(R.string.demand_badge_fmt, demand.badge, demand.label));
         tvCarSubtitle.setText(car.shortDescription);
         tvZoneSubtitle.setText(zone.subtitle);
@@ -285,11 +273,9 @@ public class MainActivity extends AppCompatActivity {
 
         tvPassengersCount.setText(String.valueOf(state.passengers));
         tvPassengersHint.setText(getString(R.string.passengers_hint_fmt, car.maxPassengers));
-        // Визуально отключаем кнопки на границах, чтобы пользователь сразу видел лимиты
         btnPassengersMinus.setEnabled(state.passengers > 1);
         btnPassengersPlus.setEnabled(state.passengers < car.maxPassengers);
 
-        // Обновляем собственный компонент шкалы цены
         priceBreakdownView.setBreakdown(breakdown, state.selectedSegmentIndex);
         if (state.selectedSegmentIndex >= 0 && state.selectedSegmentIndex < PriceBreakdownView.SEGMENT_COUNT) {
             String segName = priceBreakdownView.getSegmentName(state.selectedSegmentIndex);
@@ -300,11 +286,9 @@ public class MainActivity extends AppCompatActivity {
             tvSegmentHint.setText(R.string.breakdown_hint_default);
         }
 
-        // Обновляем закреплённую нижнюю панель с итогом
         tvTotalPrice.setText(getString(R.string.price_fmt, breakdown.totalCost));
         tvOrderSummary.setText(getString(R.string.summary_fmt, car.name, zone.name, state.passengers));
 
-        // Если мы на планшете (sw600dp) — синхронно обновляем правую панель подтверждения
         if (isTabletTwoPane) {
             tvReceiptCar.setText(car.name);
             tvReceiptZone.setText(zone.name + " (" + zone.subtitle + ")");
@@ -319,10 +303,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Передаём все данные поездки на второй экран строго через Intent extras,
-     * без статических переменных и синглтонов.
-     */
+    // Передаю все выбранные параметры на экран подтверждения через Intent, без статических полей
     private void openConfirmScreen() {
         if (isLaunchingConfirm) return;
         isLaunchingConfirm = true;
@@ -350,10 +331,7 @@ public class MainActivity extends AppCompatActivity {
         confirmLauncher.launch(intent);
     }
 
-    /**
-     * Показываем понятное подтверждение заказа с возможностью отмены (Snackbar + «Отменить»),
-     * привязанное над нижней панелью, чтобы не перекрывать кнопку вызова.
-     */
+    // Показываю Snackbar с номером заказа и возможностью отменить его, привязываю над нижней панелью
     private void showOrderConfirmedSnackbar(int orderId, int total) {
         Snackbar snackbar = Snackbar.make(
                 mainRoot,

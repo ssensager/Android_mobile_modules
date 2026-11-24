@@ -1,19 +1,17 @@
 package com.example.lab1;
 
 /**
- * Структура с результатами расчёта стоимости поездки.
- * Вычисляется в одном методе ViewModel и передаётся как в текстовые поля,
- * так и в собственный графический компонент PriceBreakdownView.
+ * Простая модель с готовой разбивкой цены.
+ * Считаю её один раз во ViewModel и отдаю сразу и в текст на экране, и в шкалу PriceBreakdownView.
  */
 public final class PriceBreakdown {
 
-    public final int baseCost;     // Подача автомобиля, руб
-    public final int kmCost;       // Стоимость пути по километрам, руб
-    public final int minCost;      // Стоимость времени в пути, руб
-    public final int optionsCost;  // Опции и доп. пассажиры, руб
-    public final int totalCost;    // Итоговая сумма, руб
+    public final int baseCost;
+    public final int kmCost;
+    public final int minCost;
+    public final int optionsCost;
+    public final int totalCost;
 
-    // Массивы из 4 элементов (Подача, Километры, Минуты, Опции) для передачи в PriceBreakdownView
     public final int[] amounts;
     public final float[] shares;
 

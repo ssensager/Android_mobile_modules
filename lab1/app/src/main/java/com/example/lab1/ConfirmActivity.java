@@ -13,15 +13,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 
 /**
- * Второй экран: подтверждение вызова такси.
- * Принимает данные поездки по явному контракту через Intent extras и возвращает результат
- * обратно на первый экран через setResult(RESULT_OK, resultIntent).
- * Если пользователь нажимает «Изменить параметры» или системную кнопку «Назад»,
- * возвращается RESULT_CANCELED, а все настройки на первом экране остаются нетронутыми.
+ * Второй экран подтверждения вызова.
+ * Забираю данные поездки из Intent и возвращаю обратно номер заказа через setResult().
  */
 public class ConfirmActivity extends AppCompatActivity {
 
-    // Константы ключей Intent для типобезопасного обмена между экранами
     public static final String EXTRA_ORDER_ID = "extra_order_id";
     public static final String EXTRA_CAR_NAME = "extra_car_name";
     public static final String EXTRA_ZONE_TEXT = "extra_zone_text";

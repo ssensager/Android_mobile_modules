@@ -5,10 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 /**
- * ViewModel — слой хранения состояния калькулятора такси.
- * Переживает поворот экрана и пересоздание Activity, поэтому выбранные параметры
- * никогда не сбрасываются. Все расчёты цены и проверки границ (например, числа пассажиров)
- * сосредоточены здесь, а Activity только подписывается на LiveData и обновляет интерфейс.
+ * Держу здесь всё состояние поездки и расчёт цены, чтобы при повороте экрана ничего не сбрасывалось.
+ * Ограничения счётчика пассажиров и пересчёт стоимости тоже делаю здесь, а Activity только рисует UI.
  */
 public class MainViewModel extends ViewModel {
 
@@ -16,11 +14,9 @@ public class MainViewModel extends ViewModel {
             new MutableLiveData<>(TaxiOrderState.initial());
     private final MutableLiveData<PriceBreakdown> breakdownLiveData = new MutableLiveData<>();
 
-    // Простой счётчик номеров заказов для демонстрации возврата результата со второго экрана
     private int nextOrderNumber = 1041;
 
     public MainViewModel() {
-        // Сразу считаем начальную стоимость, чтобы при открытии экрана итог был актуален
         recalculate(TaxiOrderState.initial());
     }
 
@@ -47,8 +43,8 @@ public class MainViewModel extends ViewModel {
         TaxiOrderState current = getCurrentState();
         if (current.carClassIndex == index) return;
 
-        // Если раньше был выбран Минивэн (до 6 мест), а пользователь переключился на легковую (до 4),
-        // аккуратно ограничиваем число пассажиров, чтобы не получилось невозможное состояние
+        // Если было выбрано 6 человек в Минивэне, а потом переключил на Эконом (макс 4),
+        // сразу подрезаю число пассажиров до допустимого максимума
         int maxAllowed = TaxiTariffs.CAR_CLASSES[index].maxPassengers;
         int clampedPassengers = Math.min(current.passengers, maxAllowed);
 
@@ -87,8 +83,7 @@ public class MainViewModel extends ViewModel {
         updateState(current.withOptions(current.hasChildSeat, current.hasLuggage, enabled));
     }
 
-    // Ограничение счётчика пассажиров (от 1 до maxPassengers выбранного авто) выполняется
-    // строго внутри ViewModel, а не на уровне кнопок в разметке
+    // Проверяю границы числа пассажиров здесь (от 1 до вместимости машины), а не в разметке
     public void incrementPassengers() {
         TaxiOrderState current = getCurrentState();
         int maxAllowed = TaxiTariffs.CAR_CLASSES[current.carClassIndex].maxPassengers;
@@ -104,26 +99,23 @@ public class MainViewModel extends ViewModel {
         }
     }
 
-    // Выделение сегмента на кастомной шкале цены (повторный тап снимает выделение)
+    // Повторное нажатие на тот же сегмент шкалы снимает выделение
     public void toggleSegmentSelection(int segmentIndex) {
         TaxiOrderState current = getCurrentState();
         int nextSelection = (current.selectedSegmentIndex == segmentIndex) ? -1 : segmentIndex;
         stateLiveData.setValue(current.withSelectedSegment(nextSelection));
     }
 
-    // Генерируем номер нового заказа для второго экрана или планшетной панели
     public int generateNextOrderId() {
         nextOrderNumber++;
         return nextOrderNumber;
     }
 
-    // Фиксируем подтверждённый заказ, который вернул второй экран через ActivityResultContracts
     public void onOrderConfirmed(int orderId) {
         TaxiOrderState current = getCurrentState();
         stateLiveData.setValue(current.withLastOrderId(orderId));
     }
 
-    // Отмена последнего заказа (вызывается по нажатию кнопки «Отменить» в Snackbar)
     public void cancelLastOrder() {
         TaxiOrderState current = getCurrentState();
         stateLiveData.setValue(current.withLastOrderId(0));
@@ -138,11 +130,8 @@ public class MainViewModel extends ViewModel {
         breakdownLiveData.setValue(calculateBreakdown(state));
     }
 
-    /**
-     * Единственная точка пересчёта стоимости поездки.
-     * Любое изменение класса, зоны, спроса, опций или числа пассажиров проходит сюда,
-     * поэтому итоговую сумму невозможно «забыть» обновить.
-     */
+    // Считаю итоговую стоимость в одном статическом методе, чтобы логику было легко тестировать
+    // и при любом изменении параметров цена пересчитывалась одинаково
     public static PriceBreakdown calculateBreakdown(TaxiOrderState s) {
         TaxiTariffs.CarClass car = TaxiTariffs.CAR_CLASSES[s.carClassIndex];
         TaxiTariffs.TariffZone zone = TaxiTariffs.TARIFF_ZONES[s.zoneIndex];
@@ -156,7 +145,6 @@ public class MainViewModel extends ViewModel {
             rawOptions += (s.passengers - 1) * TaxiTariffs.PRICE_EXTRA_PASSENGER;
         }
 
-        // Умножаем составляющие на коэффициент спроса и округляем до целого рубля
         int baseCost = Math.round(car.baseFare * demand.multiplier);
         int kmCost = Math.round(zone.distanceKm * car.pricePerKm * demand.multiplier);
         int minCost = Math.round(zone.durationMin * car.pricePerMin * demand.multiplier);

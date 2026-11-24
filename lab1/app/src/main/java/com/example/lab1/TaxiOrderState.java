@@ -1,10 +1,9 @@
 package com.example.lab1;
 
 /**
- * Единый класс состояния экрана калькулятора такси.
- * Поля сделаны final (объект неизменяемый): при любом действии пользователя ViewModel
- * создаёт новую копию состояния и кладёт её в LiveData. Это исключает случайные
- * рассинхронизации интерфейса и гарантирует, что экран всегда рисует актуальные данные.
+ * Собрал всё состояние экрана в один неизменяемый класс.
+ * Сделал поля final и обновляю их через методы with..., чтобы при каждом клике
+ * в LiveData попадал новый согласованный объект и ничего не рассинхронизировалось.
  */
 public final class TaxiOrderState {
 
@@ -15,9 +14,9 @@ public final class TaxiOrderState {
     public final boolean hasLuggage;
     public final boolean hasWaiting;
     public final int passengers;
-    // Индекс выделенного пользователем сегмента на шкале цены (-1 означает, что ничего не выделено)
+    // Индекс выделенного сегмента на шкале (-1, если ничего не выделено)
     public final int selectedSegmentIndex;
-    // Номер последнего подтверждённого заказа (0 — если заказ ещё не оформлялся или отменён)
+    // Номер последнего подтверждённого заказа (0 — если ещё не оформлял или отменил)
     public final int lastOrderId;
 
     public TaxiOrderState(int carClassIndex,
@@ -40,7 +39,7 @@ public final class TaxiOrderState {
         this.lastOrderId = lastOrderId;
     }
 
-    // Начальное состояние при первом запуске приложения: Комфорт, Город, 1.0x, 1 пассажир
+    // Стартовые настройки при запуске: Комфорт, Город, обычный спрос 1.0x, 1 пассажир
     public static TaxiOrderState initial() {
         return new TaxiOrderState(1, 1, 0, false, false, false, 1, -1, 0);
     }

@@ -18,16 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Собственный графический компонент: горизонтальная шкала структуры цены поездки в такси
- * (Подача, Километры, Минуты, Опции).
- *
- * Что реализовано:
- * 1. Чтение собственных XML-атрибутов из attrs.xml через TypedArray.
- * 2. Корректный расчёт размеров в onMeasure с переводом dp/sp в пиксели.
- * 3. Отрисовка на Canvas в onDraw БЕЗ единого создания объектов (все Paint, RectF, Path,
- *    FontMetrics и строки подписей создаются заранее в конструкторе и в setData).
- * 4. Бонус +1: плавная анимация изменения долей через ValueAnimator.
- * 5. Бонус +1: обработка касаний в onTouchEvent для выделения сегмента по нажатию.
+ * Мой собственный компонент для отображения структуры стоимости поездки:
+ * Подача, Километры, Минуты и Опции.
+ * Все кисти, прямоугольники и строки я создаю заранее в конструкторе и в setBreakdown(),
+ * чтобы в onDraw() не создавалось ни одного объекта и анимация работала плавно.
  */
 public class PriceBreakdownView extends View {
 
@@ -37,7 +31,7 @@ public class PriceBreakdownView extends View {
         void onSegmentTapped(int segmentIndex);
     }
 
-    // Все объекты для рисования создаём один раз в конструкторе, чтобы в onDraw не работал сборщик мусора
+    // Создаю все кисти и геометрию один раз, чтобы сборщик мусора не тормозил перерисовку
     private final Paint segmentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trackBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint dividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -53,7 +47,7 @@ public class PriceBreakdownView extends View {
     private final RectF cellRect = new RectF();
     private final Path barClipPath = new Path();
 
-    // Координаты прямоугольников сегментов на шкале и ячеек с подписями (для обработки касаний)
+    // Области для определения, по какому сегменту или карточке нажал пользователь
     private final RectF[] barHitRects = new RectF[SEGMENT_COUNT];
     private final RectF[] cellHitRects = new RectF[SEGMENT_COUNT];
 
@@ -61,11 +55,14 @@ public class PriceBreakdownView extends View {
     private final int[] segmentOnBarTextColors = new int[SEGMENT_COUNT];
     private final String[] segmentNames = new String[]{"Подача", "Километры", "Минуты", "Опции"};
 
-    // Строки для отрисовки пересчитываются только при смене данных в setData, а не в onDraw
+    // Подписи собираю заранее при обновлении данных, чтобы не клеить строки в onDraw
     private final String[] percentLabels = new String[]{"0%", "0%", "0%", "0%"};
     private final String[] valueLabels = new String[]{"0 ₽ · 0%", "0 ₽ · 0%", "0 ₽ · 0%", "0 ₽ · 0%"};
 
-    // Текущие (анимируемые), стартовые и целевые доли каждого сегмента (сумма = 1.0)
+    // Буфер расчётных ширин сегментов — переиспользую на каждом кадре без new float[]
+    private final float[] segmentWidths = new float[SEGMENT_COUNT];
+    private final boolean[] clampedSegments = new boolean[SEGMENT_COUNT];
+
     private final float[] currentShares = new float[]{0.25f, 0.35f, 0.25f, 0.15f};
     private final float[] startShares = new float[]{0.25f, 0.35f, 0.25f, 0.15f};
     private final float[] targetShares = new float[]{0.25f, 0.35f, 0.25f, 0.15f};
@@ -81,7 +78,10 @@ public class PriceBreakdownView extends View {
     private final float cellHeightPx;
     private final float cellCornerRadiusPx;
     private final float cellPaddingPx;
-    private final float minBarLabelWidthPx;
+    private final float minVisibleSegmentWidthPx;
+    private final float barPercentBaseSizePx;
+    private final float barPercentMinSizePx;
+    private final float barLabelHorizontalPadPx;
 
     private final ValueAnimator shareAnimator;
     private OnSegmentSelectedListener segmentListener;
@@ -97,23 +97,21 @@ public class PriceBreakdownView extends View {
     public PriceBreakdownView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        // Инициализируем прямоугольники для определения попадания пальцем
         for (int i = 0; i < SEGMENT_COUNT; i++) {
             barHitRects[i] = new RectF();
             cellHitRects[i] = new RectF();
         }
 
-        // Значения по умолчанию с гарантированным контрастом (>= 4.5:1 для текста)
-        int colorBase = Color.parseColor("#E0A000");    // Янтарный — подача
-        int colorKm = Color.parseColor("#1D4ED8");      // Синий — километры
-        int colorMin = Color.parseColor("#0F766E");     // Бирюзовый — минуты
-        int colorOptions = Color.parseColor("#7C3AED"); // Фиолетовый — опции
+        int colorBase = Color.parseColor("#E0A000");
+        int colorKm = Color.parseColor("#1D4ED8");
+        int colorMin = Color.parseColor("#0F766E");
+        int colorOptions = Color.parseColor("#7C3AED");
         int labelColor = Color.parseColor("#1C1B1F");
         int secondaryColor = Color.parseColor("#49454F");
         float defaultBarHeight = dpToPx(34f);
         float defaultCornerRadius = dpToPx(12f);
 
-        // Читаем кастомные атрибуты из XML-разметки через TypedArray
+        // Вытаскиваю цвета и размеры из XML-атрибутов, чтобы шкалу можно было настраивать из разметки
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs, R.styleable.PriceBreakdownView, defStyleAttr, 0);
@@ -136,8 +134,7 @@ public class PriceBreakdownView extends View {
         segmentColors[2] = colorMin;
         segmentColors[3] = colorOptions;
 
-        // Подбираем цвет текста внутри каждого сегмента (тёмный на жёлтом, белый на тёмных)
-        // чтобы соблюдать стандарт контрастности WCAG 4.5:1
+        // Для светлых сегментов (например жёлтой подачи) ставлю тёмный текст, для тёмных — белый
         for (int i = 0; i < SEGMENT_COUNT; i++) {
             segmentOnBarTextColors[i] = isLightColor(segmentColors[i])
                     ? Color.parseColor("#1C1B1F")
@@ -151,7 +148,12 @@ public class PriceBreakdownView extends View {
         cellHeightPx = dpToPx(50f);
         cellCornerRadiusPx = dpToPx(10f);
         cellPaddingPx = dpToPx(10f);
-        minBarLabelWidthPx = dpToPx(38f);
+        // Гарантирую минимальную ширину ненулевого сегмента, чтобы проценты (например 8% или 10%)
+        // всегда помещались внутри шкалы и не обрезались
+        minVisibleSegmentWidthPx = dpToPx(40f);
+        barPercentBaseSizePx = spToPx(12f);
+        barPercentMinSizePx = spToPx(9f);
+        barLabelHorizontalPadPx = dpToPx(6f);
 
         segmentPaint.setStyle(Paint.Style.FILL);
 
@@ -169,7 +171,7 @@ public class PriceBreakdownView extends View {
         cellBgPaint.setStyle(Paint.Style.FILL);
         cellBgPaint.setColor(Color.argb(20, 128, 128, 128));
 
-        barPercentPaint.setTextSize(spToPx(12f));
+        barPercentPaint.setTextSize(barPercentBaseSizePx);
         barPercentPaint.setFakeBoldText(true);
         barPercentPaint.setTextAlign(Paint.Align.CENTER);
 
@@ -182,7 +184,7 @@ public class PriceBreakdownView extends View {
         valueTextPaint.setTextSize(spToPx(12f));
         valueTextPaint.setTextAlign(Paint.Align.LEFT);
 
-        // Настраиваем один ValueAnimator и переиспользуем его при каждом обновлении данных
+        // Один переиспользуемый аниматор для плавного перетекания долей при смене тарифа
         shareAnimator = ValueAnimator.ofFloat(0f, 1f);
         shareAnimator.setDuration(300L);
         shareAnimator.setInterpolator(new DecelerateInterpolator());
@@ -203,22 +205,39 @@ public class PriceBreakdownView extends View {
     }
 
     /**
-     * Обновляем данные шкалы (суммы и доли) и запускаем плавную анимацию перехода.
-     * Все текстовые подписи формируются здесь, чтобы в onDraw не создавались строки.
+     * Обновляю суммы, проценты и запускаю плавную анимацию шкалы.
+     * Заодно корректирую округление у самого крупного сегмента, чтобы сумма процентов всегда была ровно 100%.
      */
     public void setBreakdown(PriceBreakdown breakdown, int selectedIndex) {
         if (breakdown == null) return;
 
         this.selectedSegmentIndex = selectedIndex;
 
+        int[] roundedPercents = new int[SEGMENT_COUNT];
+        int percentSum = 0;
+        int largestIndex = 0;
         for (int i = 0; i < SEGMENT_COUNT; i++) {
             amounts[i] = breakdown.amounts[i];
             int pct = Math.round(breakdown.shares[i] * 100f);
-            percentLabels[i] = pct + "%";
-            valueLabels[i] = amounts[i] + " ₽ · " + pct + "%";
+            // Если сумма не ноль, но доля очень маленькая, показываю хотя бы 1%
+            if (amounts[i] > 0 && pct == 0) {
+                pct = 1;
+            }
+            roundedPercents[i] = pct;
+            percentSum += pct;
+            if (amounts[i] > amounts[largestIndex]) {
+                largestIndex = i;
+            }
+        }
+        if (breakdown.totalCost > 0 && percentSum != 100) {
+            roundedPercents[largestIndex] = Math.max(1, roundedPercents[largestIndex] + (100 - percentSum));
         }
 
-        // Обновляем описание для TalkBack (доступность)
+        for (int i = 0; i < SEGMENT_COUNT; i++) {
+            percentLabels[i] = roundedPercents[i] + "%";
+            valueLabels[i] = amounts[i] + " ₽ · " + roundedPercents[i] + "%";
+        }
+
         setContentDescription(
                 "Структура цены: Подача " + valueLabels[0]
                         + ", Километры " + valueLabels[1]
@@ -259,9 +278,8 @@ public class PriceBreakdownView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // Рассчитываем желаемые размеры в dp -> px с учётом padding и увеличенного шрифта
+        // Считаю желаемую высоту с запасом под увеличенный системный шрифт
         int desiredWidth = Math.round(dpToPx(320f)) + getPaddingLeft() + getPaddingRight();
-        // Высота: шкала + отступ + 2 ряда карточек-подписей (с учётом системного масштаба текста)
         float textScaleHeight = Math.max(cellHeightPx, (titleTextPaint.getTextSize() + valueTextPaint.getTextSize()) * 2.15f);
         int desiredHeight = Math.round(
                 barHeightPx + dpToPx(14f) + textScaleHeight * 2f + gapPx + dpToPx(6f)
@@ -270,6 +288,48 @@ public class PriceBreakdownView extends View {
         int measuredWidth = resolveSize(desiredWidth, widthMeasureSpec);
         int measuredHeight = resolveSize(desiredHeight, heightMeasureSpec);
         setMeasuredDimension(measuredWidth, measuredHeight);
+    }
+
+    /**
+     * Рассчитываю ширину каждого сегмента так, чтобы узкие ненулевые сегменты (Подача, Опции)
+     * получали минимальную читаемую ширину, а остальное место честно делилось между крупными.
+     */
+    private void computeSegmentWidths(float availableWidth) {
+        int activeCount = 0;
+        for (int i = 0; i < SEGMENT_COUNT; i++) {
+            clampedSegments[i] = false;
+            segmentWidths[i] = 0f;
+            if (currentShares[i] > 0.001f) {
+                activeCount++;
+            }
+        }
+        if (activeCount == 0) return;
+
+        float effectiveMinWidth = Math.min(minVisibleSegmentWidthPx, availableWidth / activeCount);
+        float reservedWidth = 0f;
+        float freeSharesSum = 0f;
+
+        // Первый проход: фиксирую слишком узкие сегменты на минимальной ширине
+        for (int i = 0; i < SEGMENT_COUNT; i++) {
+            if (currentShares[i] <= 0.001f) continue;
+            float rawWidth = availableWidth * currentShares[i];
+            if (rawWidth < effectiveMinWidth) {
+                clampedSegments[i] = true;
+                segmentWidths[i] = effectiveMinWidth;
+                reservedWidth += effectiveMinWidth;
+            } else {
+                freeSharesSum += currentShares[i];
+            }
+        }
+
+        // Второй проход: распределяю оставшуюся ширину пропорционально между крупными сегментами
+        float remainingWidth = Math.max(0f, availableWidth - reservedWidth);
+        for (int i = 0; i < SEGMENT_COUNT; i++) {
+            if (currentShares[i] <= 0.001f || clampedSegments[i]) continue;
+            if (freeSharesSum > 0f) {
+                segmentWidths[i] = remainingWidth * (currentShares[i] / freeSharesSum);
+            }
+        }
     }
 
     @Override
@@ -282,54 +342,69 @@ public class PriceBreakdownView extends View {
         float availableWidth = right - left;
         if (availableWidth <= 0f) return;
 
-        // 1. Рисуем фоновую подложку шкалы
+        // 1. Фоновая подложка шкалы
         barRect.set(left, top, right, top + barHeightPx);
         canvas.drawRoundRect(barRect, barCornerRadiusPx, barCornerRadiusPx, trackBgPaint);
 
-        // 2. Рисуем цветные сегменты внутри скруглённой области (clipPath)
+        // 2. Цветные сегменты внутри скруглённого контура
+        computeSegmentWidths(availableWidth);
         barClipPath.reset();
         barClipPath.addRoundRect(barRect, barCornerRadiusPx, barCornerRadiusPx, Path.Direction.CW);
 
         int saveCount = canvas.save();
         canvas.clipPath(barClipPath);
 
+        int lastActiveIndex = -1;
+        for (int i = 0; i < SEGMENT_COUNT; i++) {
+            if (segmentWidths[i] > 0.5f) lastActiveIndex = i;
+        }
+
         float cursorX = left;
         for (int i = 0; i < SEGMENT_COUNT; i++) {
-            float segWidth = availableWidth * currentShares[i];
-            float segRight = (i == SEGMENT_COUNT - 1) ? right : cursorX + segWidth;
-
+            float segWidth = segmentWidths[i];
             if (segWidth > 0.5f) {
+                float segRight = (i == lastActiveIndex) ? right : cursorX + segWidth;
+                float actualWidth = segRight - cursorX;
                 segmentRect.set(cursorX, top, segRight, top + barHeightPx);
                 barHitRects[i].set(segmentRect);
 
                 segmentPaint.setColor(segmentColors[i]);
-                // Если выбран другой сегмент — слегка приглушаем невыбранные, чтобы акцент был очевиден
                 boolean dimmed = (selectedSegmentIndex != -1 && selectedSegmentIndex != i);
                 segmentPaint.setAlpha(dimmed ? 95 : 255);
                 canvas.drawRect(segmentRect, segmentPaint);
 
-                // Тонкий разделитель между соседними сегментами
                 if (cursorX > left) {
                     canvas.drawLine(cursorX, top, cursorX, top + barHeightPx, dividerPaint);
                 }
 
-                // Подписываем проценты прямо внутри сегмента, если он достаточно широкий
-                if (segWidth >= minBarLabelWidthPx) {
-                    barPercentPaint.setColor(segmentOnBarTextColors[i]);
-                    barPercentPaint.setAlpha(dimmed ? 160 : 255);
-                    barPercentPaint.getFontMetrics(fontMetrics);
-                    float textY = top + barHeightPx / 2f - (fontMetrics.ascent + fontMetrics.descent) / 2f;
-                    canvas.drawText(percentLabels[i], cursorX + segWidth / 2f, textY, barPercentPaint);
+                // Подгоняю размер шрифта под ширину сегмента, чтобы проценты всегда влезали
+                float maxTextWidth = actualWidth - barLabelHorizontalPadPx;
+                if (maxTextWidth > 0f) {
+                    float chosenSize = barPercentBaseSizePx;
+                    barPercentPaint.setTextSize(chosenSize);
+                    while (barPercentPaint.measureText(percentLabels[i]) > maxTextWidth
+                            && chosenSize > barPercentMinSizePx) {
+                        chosenSize -= 1f;
+                        barPercentPaint.setTextSize(chosenSize);
+                    }
+                    if (barPercentPaint.measureText(percentLabels[i]) <= maxTextWidth) {
+                        barPercentPaint.setColor(segmentOnBarTextColors[i]);
+                        barPercentPaint.setAlpha(dimmed ? 160 : 255);
+                        barPercentPaint.getFontMetrics(fontMetrics);
+                        float textY = top + barHeightPx / 2f - (fontMetrics.ascent + fontMetrics.descent) / 2f;
+                        canvas.drawText(percentLabels[i], cursorX + actualWidth / 2f, textY, barPercentPaint);
+                    }
+                    barPercentPaint.setTextSize(barPercentBaseSizePx);
                 }
+
+                cursorX = segRight;
             } else {
                 barHitRects[i].setEmpty();
             }
-
-            cursorX = segRight;
         }
         canvas.restoreToCount(saveCount);
 
-        // Если сегмент выделен касанием — обводим его на шкале контрастной рамкой (WCAG 1.4.1)
+        // Обводка выделенного касанием сегмента на самой шкале
         if (selectedSegmentIndex >= 0 && selectedSegmentIndex < SEGMENT_COUNT) {
             RectF selectedBar = barHitRects[selectedSegmentIndex];
             if (!selectedBar.isEmpty()) {
@@ -338,7 +413,7 @@ public class PriceBreakdownView extends View {
             }
         }
 
-        // 3. Рисуем подписи прямо на компоненте в виде сетки 2x2 (читается без внешней легенды)
+        // 3. Карточки-подписи 2x2 под шкалой, чтобы всё читалось без отдельной легенды
         float gridTop = top + barHeightPx + dpToPx(14f);
         float cellWidth = (availableWidth - gapPx) / 2f;
         float dynamicCellHeight = Math.max(cellHeightPx,
@@ -359,31 +434,26 @@ public class PriceBreakdownView extends View {
             boolean isSelected = (selectedSegmentIndex == i);
             boolean isEmptyAmount = (amounts[i] == 0);
 
-            // Подложка ячейки
             cellBgPaint.setAlpha(isSelected ? 42 : 18);
             canvas.drawRoundRect(cellRect, cellCornerRadiusPx, cellCornerRadiusPx, cellBgPaint);
 
-            // Контрастная рамка у выбранного сегмента (форма + цвет)
             if (isSelected) {
                 highlightStrokePaint.setColor(segmentColors[i]);
                 canvas.drawRoundRect(cellRect, cellCornerRadiusPx, cellCornerRadiusPx, highlightStrokePaint);
             }
 
-            // Цветной маркер сегмента
             float dotCenterX = cLeft + cellPaddingPx + dotRadiusPx;
             float dotCenterY = cTop + dynamicCellHeight / 2f;
             segmentPaint.setColor(segmentColors[i]);
             segmentPaint.setAlpha(isEmptyAmount ? 100 : 255);
             canvas.drawCircle(dotCenterX, dotCenterY, isSelected ? dotRadiusPx * 1.25f : dotRadiusPx, segmentPaint);
 
-            // Заголовок сегмента (Подача / Километры / Минуты / Опции)
             float textLeft = dotCenterX + dotRadiusPx + dpToPx(8f);
             titleTextPaint.setAlpha(isEmptyAmount ? 140 : 255);
             titleTextPaint.getFontMetrics(fontMetrics);
             float titleBaseline = cTop + dynamicCellHeight * 0.40f - (fontMetrics.ascent + fontMetrics.descent) / 2f;
             canvas.drawText(segmentNames[i], textLeft, titleBaseline, titleTextPaint);
 
-            // Сумма и процент (например, "216 ₽ · 32%")
             valueTextPaint.setAlpha(isEmptyAmount ? 130 : 255);
             valueTextPaint.getFontMetrics(fontMetrics);
             float valueBaseline = cTop + dynamicCellHeight * 0.74f - (fontMetrics.ascent + fontMetrics.descent) / 2f;
@@ -391,20 +461,14 @@ public class PriceBreakdownView extends View {
         }
     }
 
-    /**
-     * Бонус +1: обработка касаний внутри собственного View.
-     * Пользователь может нажать как на сам цветной сегмент шкалы, так и на его карточку-подпись ниже.
-     */
+    // Обрабатываю касания как по цветным отрезкам шкалы, так и по карточкам с подписями ниже
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             return true;
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            float x = event.getX();
-            float y = event.getY();
-
-            int tappedIndex = findSegmentAt(x, y);
+            int tappedIndex = findSegmentAt(event.getX(), event.getY());
             if (tappedIndex != -1) {
                 performClick();
                 if (segmentListener != null) {
