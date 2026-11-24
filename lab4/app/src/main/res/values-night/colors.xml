@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Тёмная фиолетово-ботаническая палитра -->
+    <color name="color_primary">#C4B5FD</color>
+    <color name="color_on_primary">#2E1065</color>
+    <color name="color_primary_container">#4C1D95</color>
+    <color name="color_on_primary_container">#F5F3FF</color>
+
+    <color name="color_secondary">#86EFAC</color>
+    <color name="color_on_secondary">#052E16</color>
+    <color name="color_secondary_container">#1B3B2B</color>
+    <color name="color_on_secondary_container">#A7F3D0</color>
+
+    <color name="color_background">#12101A</color>
+    <color name="color_surface">#1D192B</color>
+    <color name="color_surface_variant">#2A243D</color>
+    <color name="color_on_surface">#F3F0FF</color>
+    <color name="color_on_surface_variant">#BEB5D6</color>
+    <color name="color_outline">#3E3559</color>
+
+    <!-- Бейджи ухода в тёмной теме -->
+    <color name="badge_water_bg">#13313B</color>
+    <color name="badge_water_fg">#67E8F9</color>
+
+    <color name="badge_light_bg">#382810</color>
+    <color name="badge_light_fg">#FCD34D</color>
+
+    <color name="badge_temp_bg">#143321</color>
+    <color name="badge_temp_fg">#86EFAC</color>
+
+    <color name="badge_calendar_bg">#312257</color>
+    <color name="badge_calendar_fg">#DDD6FE</color>
+
+    <color name="warning_bg">#3D2B0D</color>
+    <color name="warning_fg">#FDE68A</color>
+
+    <color name="color_danger">#FCA5A5</color>
+    <color name="color_danger_container">#3F1A1A</color>
+
+    <color name="scrim_dark">#B3000000</color>
+    <color name="zoom_background">#08070D</color>
+</resources>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ФлораГид</string>
+    <string name="catalog_subtitle_empty">Каталог комнатных растений</string>
+    <string name="catalog_subtitle_format">Растений: %1$d · ср. фото %2$d КБ</string>
+    <string name="action_add_plant">Добавить</string>
+    <string name="action_toggle_grid">Показать сеткой</string>
+    <string name="action_toggle_list">Показать списком</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_undo">Отменить</string>
+    <string name="action_back">Назад</string>
+    <string name="action_reset_zoom">100%</string>
+
+    <string name="empty_title">В справочнике пока пусто</string>
+    <string name="empty_description">Добавьте первое комнатное растение с фотографией из галереи или камеры и настройте график полива.</string>
+    <string name="empty_action">Добавить растение</string>
+
+    <string name="badge_watering_format">Раз в %1$d дн.</string>
+    <string name="badge_calendar_active">В календаре</string>
+    <string name="badge_size_format">%1$d КБ</string>
+
+    <!-- Экран добавления -->
+    <string name="add_title">Новое растение</string>
+    <string name="hint_plant_name">Название растения *</string>
+    <string name="hint_plant_species">Вид (латинское или народное)</string>
+    <string name="hint_light_needs">Освещение</string>
+    <string name="hint_watering_days">Интервал полива (дней) *</string>
+    <string name="hint_temperature">Температура содержания</string>
+    <string name="hint_notes">Заметки по уходу</string>
+    <string name="btn_pick_gallery">Из галереи</string>
+    <string name="btn_take_photo">Снять на камеру</string>
+    <string name="btn_save_plant">Сохранить растение</string>
+    <string name="photo_compressing">Сжимаю и сохраняю фото…</string>
+    <string name="photo_not_selected">Фото не выбрано (можно выбрать позже)</string>
+    <string name="photo_ready_format">Сохранено локально: %1$d КБ (%2$d×%3$d)</string>
+    <string name="error_name_required">Введите название растения</string>
+    <string name="error_watering_invalid">Укажите число дней от 1 до 60</string>
+    <string name="error_photo_failed">Не удалось обработать изображение</string>
+    <string name="error_camera_unavailable">Камера недоступна на этом устройстве</string>
+
+    <!-- Экран деталей -->
+    <string name="detail_title">Карточка растения</string>
+    <string name="detail_zoom_hint">Нажмите для приближения</string>
+    <string name="detail_care_section">Условия ухода</string>
+    <string name="detail_label_light">Освещение</string>
+    <string name="detail_label_watering">Полив</string>
+    <string name="detail_label_temperature">Температура</string>
+    <string name="detail_notes_section">Заметки владельца</string>
+    <string name="detail_notes_empty">Заметки пока не добавлены.</string>
+    <string name="detail_photo_info_format">Локальный файл: %1$d КБ</string>
+    <string name="detail_photo_missing">Фотография не прикреплена</string>
+
+    <!-- Календарь -->
+    <string name="calendar_section_title">График полива в календаре</string>
+    <string name="calendar_status_none">Повторяющееся напоминание ещё не создано.</string>
+    <string name="calendar_status_active_format">Активна серия: каждые %1$d дн., напоминание за 60 мин\nПравило: %2$s · ID #%3$d</string>
+    <string name="btn_schedule_calendar">Запланировать полив</string>
+    <string name="btn_remove_calendar">Удалить из календаря</string>
+    <string name="calendar_rationale_title">Доступ к календарю</string>
+    <string name="calendar_rationale_message">Разрешение нужно, чтобы напрямую создать повторяющееся напоминание о поливе и удалять его, если растение будет убрано из справочника.</string>
+    <string name="calendar_rationale_allow">Разрешить</string>
+    <string name="calendar_denied_snackbar">Доступ к календарю не выдан — справочник работает в полном объёме.</string>
+    <string name="calendar_no_writable">На устройстве не найден календарь, доступный для записи.</string>
+    <string name="calendar_preview_title">Подтвердите серию событий</string>
+    <string name="calendar_preview_confirm">Создать серию</string>
+    <string name="calendar_created_snackbar">Повторяющийся полив добавлен в календарь</string>
+    <string name="calendar_removed_snackbar">Событие удалено из календаря</string>
+    <string name="calendar_create_error">Не удалось записать событие в календарь</string>
+
+    <!-- Удаление -->
+    <string name="delete_dialog_title">Удалить растение?</string>
+    <string name="delete_dialog_message_format">Запись «%1$s», её локальное фото и связанное событие в календаре будут удалены.</string>
+    <string name="delete_snackbar_format">Удалено: «%1$s»</string>
+
+    <!-- Просмотр фото -->
+    <string name="zoom_gesture_hint">Сведите или разведите пальцы · двойной тап — масштаб</string>
+
+    <!-- Варианты освещения -->
+    <string-array name="light_options">
+        <item>Яркий рассеянный</item>
+        <item>Полутень</item>
+        <item>Прямое солнце</item>
+        <item>Теневыносливое</item>
+    </string-array>
+</resources>

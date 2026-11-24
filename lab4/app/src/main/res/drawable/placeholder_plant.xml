@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Спокойная заглушка карточки на время загрузки изображения -->
+    <path
+        android:fillColor="@color/color_surface_variant"
+        android:pathData="M0,0H120V120H0Z" />
+    <path
+        android:fillColor="@color/color_primary"
+        android:fillAlpha="0.28"
+        android:pathData="M75,40C48,46 41.7,64.5 35.5,80L41.1,82L44,75.1C45.4,75.6 46.9,76 48,76C81,76 90,25 90,25C87,31 66,31.7 51,34.7C36,37.7 30,50.5 30,56.5C30,62.5 35.2,67.7 35.2,67.7C45,40 75,40 75,40Z" />
+</vector>

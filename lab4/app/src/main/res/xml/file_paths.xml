@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Временная папка для свежих снимков с камеры до сжатия -->
+    <cache-path
+        name="camera_photos"
+        path="camera/" />
+    <!-- Внутренняя папка с уже сжатыми фотографиями растений -->
+    <files-path
+        name="plant_images"
+        path="images/" />
+</paths>
