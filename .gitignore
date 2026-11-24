@@ -1,4 +1,10 @@
-.agents/
+﻿.agents/
 .claude/
+**/.idea/
+**/.gradle/
+**/.kotlin/
+**/build/
+**/local.properties
 .DS_Store
 Thumbs.db
+desktop.ini
