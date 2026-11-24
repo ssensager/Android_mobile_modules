@@ -4,10 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Хранилище черновика формы на базе SharedPreferences («ключ-значение»).
- * Используем именно SharedPreferences, а не SQLite, потому что черновик — это
- * всего один набор строк и чисел, а сохранение через apply() работает асинхронно
- * и не тормозит главный поток интерфейса.
+ * Сделал простую обёртку над SharedPreferences для сохранения черновика формы.
+ * Выбрал ключ-значение вместо базы данных, потому что мне нужно хранить всего один набор полей,
+ * а apply() пишет данные в фоне и не тормозит интерфейс.
  */
 public class DraftStorage {
 
@@ -68,7 +67,7 @@ public class DraftStorage {
                 .putLong(KEY_DATETIME_MS, deliveryTimeMs)
                 .putInt(KEY_PAYMENT_INDEX, paymentIndex)
                 .putBoolean(KEY_HAS_DRAFT, hasAnyData)
-                .apply(); // apply() пишет на диск в фоне и не блокирует UI
+                .apply();
     }
 
     public DraftData loadDraft() {

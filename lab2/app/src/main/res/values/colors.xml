@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Светлая тема службы доставки еды (контраст текста >= 4.5:1) -->
+    <!-- Цвета светлой темы -->
     <color name="food_bg">#F5F6F8</color>
     <color name="food_surface">#FFFFFF</color>
     <color name="food_surface_variant">#EBF3F0</color>

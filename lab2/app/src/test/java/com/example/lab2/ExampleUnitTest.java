@@ -7,9 +7,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Модульные тесты валидации формы доставки еды и расчёта промокодов.
+ * Мои модульные тесты для проверки валидации, маски телефона и расчёта промокодов.
  */
 public class ExampleUnitTest {
+
+    @Test
+    public void phoneMaskFormatsDigitsAutomatically() {
+        assertEquals("+7 (900) 111-11-11", PhoneMaskFormatter.formatRussianPhone("9001111111"));
+        assertEquals("+7 (900) 111-11-11", PhoneMaskFormatter.formatRussianPhone("89001111111"));
+        assertEquals("+7 (900) 111-11-11", PhoneMaskFormatter.formatRussianPhone("+79001111111"));
+        assertEquals("+7 (900", PhoneMaskFormatter.formatRussianPhone("900"));
+        assertEquals("", PhoneMaskFormatter.formatRussianPhone(""));
+    }
 
     @Test
     public void nameAndAddressValidationRejectSpacesOnly() {
@@ -19,14 +28,14 @@ public class ExampleUnitTest {
 
         assertFalse(DeliveryValidator.isValidAddress("   "));
         assertFalse(DeliveryValidator.isValidAddress("дом"));
-        assertTrue(DeliveryValidator.isValidAddress("ул. Ленина, д. 5, кв. 12"));
+        assertTrue(DeliveryValidator.isValidAddress("ул. Газон, д. 5, кв. 12"));
     }
 
     @Test
-    public void phoneValidationAcceptsFormattedNumbersAndRejectsGarbage() {
-        assertTrue(DeliveryValidator.isValidPhone("+7 900 123-45-67"));
+    public void phoneValidationRequiresFullElevenDigits() {
+        assertTrue(DeliveryValidator.isValidPhone("+7 (900) 123-45-67"));
         assertTrue(DeliveryValidator.isValidPhone("89001234567"));
-        assertFalse(DeliveryValidator.isValidPhone("12345"));
+        assertFalse(DeliveryValidator.isValidPhone("+7 (900) 123"));
         assertFalse(DeliveryValidator.isValidPhone("abc-def-ghij"));
     }
 

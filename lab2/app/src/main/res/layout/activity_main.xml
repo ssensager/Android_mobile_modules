@@ -180,15 +180,25 @@
                         app:errorEnabled="true"
                         app:helperText="@string/helper_address">
 
-                        <com.google.android.material.textfield.TextInputEditText
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
                             android:id="@+id/et_address"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:autofillHints="postalAddress"
+                            android:completionThreshold="1"
                             android:imeOptions="actionNext"
                             android:inputType="textPostalAddress|textCapSentences"
-                            android:maxLines="2" />
+                            android:maxLines="2"
+                            android:padding="16dp" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_open_map"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:text="@string/btn_open_on_map" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/til_comment"
@@ -322,7 +332,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Карточка 3: Промокод (Бонус +1: пересчёт итога) -->
+            <!-- Карточка 3: Промокод -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

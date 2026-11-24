@@ -1,15 +1,13 @@
 package com.example.lab2;
 
 /**
- * Простой класс проверки полей формы доставки и расчёта скидки по промокоду.
- * Вынесли проверки в отдельные чистые методы (без привязки к Android UI),
- * чтобы код был максимально понятным и его можно было легко проверить модульными тестами.
+ * Здесь собрал все проверки полей формы и расчёт скидки по промокоду.
+ * Вынес их отдельно от Activity, чтобы код был чище и легко проверялся тестами.
  */
 public final class DeliveryValidator {
 
     public static final int BASE_ORDER_PRICE = 1290;
 
-    // Результат проверки промокода (размер скидки и описание)
     public static final class PromoResult {
         public final boolean isKnown;
         public final int discountRub;
@@ -24,12 +22,10 @@ public final class DeliveryValidator {
 
     public static boolean isValidName(String rawName) {
         if (rawName == null) return false;
-        String trimmed = rawName.trim();
-        return trimmed.length() >= 2;
+        return rawName.trim().length() >= 2;
     }
 
-    // Проверяем номер телефона: разрешаем пробелы, скобки, дефисы и плюс,
-    // но требуем от 10 до 15 реальных цифр (например, +7 900 123-45-67)
+    // Проверяю телефон по количеству реальных цифр (формат +7 (900) 111-11-11 даёт ровно 11 цифр)
     public static boolean isValidPhone(String rawPhone) {
         if (rawPhone == null) return false;
         String trimmed = rawPhone.trim();
@@ -44,7 +40,7 @@ public final class DeliveryValidator {
                 return false;
             }
         }
-        return digitCount >= 10 && digitCount <= 15;
+        return digitCount == 11;
     }
 
     public static boolean isValidAddress(String rawAddress) {
@@ -52,15 +48,12 @@ public final class DeliveryValidator {
         return rawAddress.trim().length() >= 5;
     }
 
-    // Дата доставки должна быть выбрана и находиться в будущем (с запасом 1 минута)
+    // Не даю оформить доставку на время в прошлом (даю небольшой запас в 1 минуту)
     public static boolean isValidDeliveryTime(long deliveryTimeMs, long nowMs) {
         return deliveryTimeMs > 0 && deliveryTimeMs >= (nowMs - 60_000L);
     }
 
-    /**
-     * Бонус +1: проверка промокода с пересчётом итоговой суммы.
-     * Пустое поле считается валидным (промокод необязателен).
-     */
+    // Проверяю промокод и сразу считаю скидку; пустое поле пропускаю, так как промокод необязателен
     public static PromoResult evaluatePromo(String rawPromo) {
         if (rawPromo == null || rawPromo.trim().isEmpty()) {
             return new PromoResult(true, 0, "");

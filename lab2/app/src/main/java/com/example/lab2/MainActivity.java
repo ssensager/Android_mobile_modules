@@ -3,6 +3,7 @@ package com.example.lab2;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -12,6 +13,8 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -30,6 +33,7 @@ import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -42,16 +46,31 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Лабораторная работа №2 (Вариант 1): форма оформления доставки еды.
- *
- * Реализованы все 4 обязательных модуля и 3 бонуса:
- * 1. Инлайн-валидация с показом ошибок после потери фокуса и мгновенным снятием при исправлении.
- * 2. Сохранение и восстановление черновика через SharedPreferences (DraftStorage).
- * 3. Запрос разрешения POST_NOTIFICATIONS с предварительным объяснением и работой при отказе.
- * 4. Передача события в системный календарь через Intent.ACTION_INSERT с проверкой resolveActivity.
- * Бонусы: промокоды с пересчётом итога, плавная анимация ошибок + автопрокрутка, настраиваемое напоминание.
+ * Основной экран формы оформления доставки еды.
+ * Здесь я собрал автоформатирование телефона, автоподсказки адресов с открытием на карте,
+ * проверку всех полей с плавным появлением ошибок, сохранение черновика, запрос разрешения
+ * на уведомления и добавление доставки в системный календарь.
  */
 public class MainActivity extends AppCompatActivity {
+
+    // Список популярных улиц Великого Новгорода для выпадающей подсказки адреса
+    private static final String[] ADDRESS_SUGGESTIONS = new String[]{
+            "ул. Большая Санкт-Петербургская, д. ",
+            "ул. Газон, д. ",
+            "ул. Ломоносова, д. ",
+            "ул. Псковская, д. ",
+            "пр. Мира, д. ",
+            "ул. Фёдоровский Ручей, д. ",
+            "ул. Чудинцева, д. ",
+            "ул. Великая, д. ",
+            "ул. Кочетова, д. ",
+            "наб. Александра Невского, д. ",
+            "ул. Зелинского, д. ",
+            "пр. Александра Корсунова, д. ",
+            "ул. Державина, д. ",
+            "ул. Стратилатовская, д. ",
+            "ул. Нехинская, д. "
+    };
 
     private View rootView;
     private View bottomActionBar;
@@ -60,35 +79,35 @@ public class MainActivity extends AppCompatActivity {
     private View cardDraftBanner;
 
     private TextInputLayout tilName, tilPhone, tilAddress, tilPromo;
-    private TextInputEditText etName, etPhone, etAddress, etComment, etPromo;
+    private TextInputEditText etName, etPhone, etComment, etPromo;
+    private MaterialAutoCompleteTextView etAddress;
     private TextView tvSelectedDatetime, tvDatetimeError, tvPromoStatus, tvNotifStatus;
     private TextView tvTotalAmount, tvCheckFields;
     private ChipGroup cgPayment;
-    private MaterialButton btnPickDatetime, btnRequestNotif, btnSubmit, btnClearDraft;
+    private MaterialButton btnPickDatetime, btnRequestNotif, btnSubmit, btnClearDraft, btnOpenMap;
 
     private DraftStorage draftStorage;
     private long selectedDeliveryTimeMs = 0L;
 
-    // Флаги «пользователь уже взаимодействовал с полем» — нужны, чтобы форма не краснела
-    // сразу при открытии или на первой введённой букве (правило validate-input-after-interaction)
+    // Отмечаю поля, с которых пользователь уже ушёл, чтобы ошибки не мелькали с первой введённой буквы
     private boolean nameTouched = false;
     private boolean phoneTouched = false;
     private boolean addressTouched = false;
     private boolean datetimeTouched = false;
     private boolean promoTouched = false;
     private boolean isRestoringDraft = false;
+    // Флаг нужен, чтобы автоформатирование телефона не запускало TextWatcher рекурсивно
+    private boolean isFormattingPhone = false;
 
     private final SimpleDateFormat dateTimeFormat =
             new SimpleDateFormat("d MMMM, HH:mm", new Locale("ru"));
 
-    // Запрос разрешения на уведомления во время выполнения (Android 13+)
     private final ActivityResultLauncher<String> notificationPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
                 updateNotificationStatusUi();
                 if (granted) {
                     showSnackbar(getString(R.string.snackbar_notif_granted));
                 } else {
-                    // При отказе приложение продолжает работать полностью
                     showSnackbar(getString(R.string.snackbar_notif_denied));
                 }
             });
@@ -101,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         draftStorage = new DraftStorage(this);
 
         bindViews();
+        setupAddressAutocomplete();
         applySystemInsets();
         restoreDraftIfPresent();
         setupListeners();
@@ -112,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // Сохраняем черновик при сворачивании, чтобы входящий звонок не стёр форму
+        // Сохраняю черновик при сворачивании экрана, чтобы введённые поля не пропали
         saveCurrentDraft();
     }
 
@@ -142,11 +162,23 @@ public class MainActivity extends AppCompatActivity {
 
         cgPayment = findViewById(R.id.cg_payment);
         btnPickDatetime = findViewById(R.id.btn_pick_datetime);
+        btnOpenMap = findViewById(R.id.btn_open_map);
         btnRequestNotif = findViewById(R.id.btn_request_notif);
 
         tvTotalAmount = findViewById(R.id.tv_total_amount);
         tvCheckFields = findViewById(R.id.tv_check_fields);
         btnSubmit = findViewById(R.id.btn_submit);
+    }
+
+    // Подключаю выпадающий список подсказок улиц к полю адреса
+    private void setupAddressAutocomplete() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                ADDRESS_SUGGESTIONS
+        );
+        etAddress.setAdapter(adapter);
+        etAddress.setThreshold(1);
     }
 
     private void applySystemInsets() {
@@ -168,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
 
         isRestoringDraft = true;
         etName.setText(draft.name);
-        etPhone.setText(draft.phone);
-        etAddress.setText(draft.address);
+        etPhone.setText(PhoneMaskFormatter.formatRussianPhone(draft.phone));
+        etAddress.setText(draft.address, false);
         etComment.setText(draft.comment);
         etPromo.setText(draft.promo);
         selectedDeliveryTimeMs = draft.deliveryTimeMs;
@@ -188,8 +220,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        // Ошибки показываем при потере фокуса (а не с первой буквы),
-        // чтобы форма воспринималась дружелюбно
+        // Показываю ошибку только после потери фокуса, чтобы не мешать пока человек печатает
         etName.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 nameTouched = true;
@@ -215,8 +246,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // При вводе текста: сразу снимаем ошибку, если поле стало валидным, пересчитываем промокод
-        // и сохраняем черновик
+        // Отдельный TextWatcher на телефон: сам подставляет +7 (XXX) XXX-XX-XX по мере ввода цифр
+        etPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isRestoringDraft || isFormattingPhone) return;
+                isFormattingPhone = true;
+                String formatted = PhoneMaskFormatter.formatRussianPhone(s.toString());
+                if (!formatted.equals(s.toString())) {
+                    s.replace(0, s.length(), formatted);
+                }
+                isFormattingPhone = false;
+
+                validateForm(false);
+                saveCurrentDraft();
+            }
+        });
+
         TextWatcher formWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -234,7 +286,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         etName.addTextChangedListener(formWatcher);
-        etPhone.addTextChangedListener(formWatcher);
         etAddress.addTextChangedListener(formWatcher);
         etComment.addTextChangedListener(formWatcher);
         etPromo.addTextChangedListener(formWatcher);
@@ -244,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnPickDatetime.setOnClickListener(v -> openDateAndTimePickers());
+        btnOpenMap.setOnClickListener(v -> openAddressInMaps());
 
         btnClearDraft.setOnClickListener(v -> {
             clearFormAndDraft();
@@ -252,8 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnRequestNotif.setOnClickListener(v -> requestNotificationsWithExplanation());
 
-        // Бонус +1: подсказка «Что заполнить?» показывает все ошибки с плавной анимацией
-        // и автоматически прокручивает экран к первому невалидному полю
+        // По нажатию подсвечиваю незаполненные поля и плавно прокручиваю к первому из них
         tvCheckFields.setOnClickListener(v -> {
             View firstInvalid = validateFormAndFindFirstInvalid();
             if (firstInvalid != null) {
@@ -271,9 +322,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Выбор даты и времени через MaterialDatePicker + MaterialTimePicker (не вручную строкой).
-     */
+    // Открываю введённый адрес в Google Картах или другом картографическом приложении через geo-Intent
+    private void openAddressInMaps() {
+        String address = getTextSafe(etAddress).trim();
+        String query = address.isEmpty()
+                ? "Великий Новгород"
+                : "Великий Новгород, " + address;
+        Uri geoUri = Uri.parse("geo:0,0?q=" + Uri.encode(query));
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, geoUri);
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        } else {
+            showSnackbar(getString(R.string.snackbar_no_maps));
+        }
+    }
+
     private void openDateAndTimePickers() {
         CalendarConstraints constraints = new CalendarConstraints.Builder()
                 .setValidator(DateValidatorPointForward.now())
@@ -322,11 +385,7 @@ public class MainActivity extends AppCompatActivity {
         datePicker.show(getSupportFragmentManager(), "delivery_date_picker");
     }
 
-    /**
-     * Единый метод валидации формы.
-     * Возвращает true только если все обязательные поля корректны и промокод (если введён) известен.
-     * Управляет доступностью кнопки «Оформить заказ» и плавно анимирует появление/снятие ошибок.
-     */
+    // Единая проверка всей формы: выставляю/снимаю ошибки и включаю кнопку оформления только когда всё верно
     private boolean validateForm(boolean showAllErrors) {
         String name = getTextSafe(etName);
         String phone = getTextSafe(etPhone);
@@ -340,7 +399,6 @@ public class MainActivity extends AppCompatActivity {
         boolean dateNotPast = DeliveryValidator.isValidDeliveryTime(selectedDeliveryTimeMs, System.currentTimeMillis());
         boolean promoOk = DeliveryValidator.evaluatePromo(promo).isKnown;
 
-        // Бонус +1: плавная анимация появления и скрытия текстов ошибок
         TransitionManager.beginDelayedTransition(formContainer);
 
         setFieldError(tilName, (showAllErrors || nameTouched) && !nameOk
@@ -368,7 +426,6 @@ public class MainActivity extends AppCompatActivity {
         return allValid;
     }
 
-    // Принудительно показываем все ошибки и возвращаем первое невалидное поле для автопрокрутки
     private View validateFormAndFindFirstInvalid() {
         nameTouched = true;
         phoneTouched = true;
@@ -435,10 +492,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Перед системным запросом разрешения объясняем пользователю, зачем оно нужно,
-     * чтобы не пугать внезапным диалогом.
-     */
+    // Сначала показываю короткое объяснение, зачем нужны уведомления, и только потом кидаю системный запрос
     private void requestNotificationsWithExplanation() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             updateNotificationStatusUi();
@@ -502,19 +556,13 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage(summary.toString())
                 .setPositiveButton(R.string.dialog_confirm_ok, (dialog, which) -> {
                     long savedTimeMs = selectedDeliveryTimeMs;
-                    // Очищаем черновик после успешного оформления заказа
                     clearFormAndDraft();
-                    // Предлагаем (не навязываем!) добавить доставку в календарь
                     showCalendarOfferDialog(name, address, payment, finalPrice, savedTimeMs);
                 })
                 .setNegativeButton(R.string.dialog_confirm_cancel, null)
                 .show();
     }
 
-    /**
-     * После успешной отправки предлагаем добавить событие в календарь
-     * с настраиваемым временем напоминания (Бонус +1: 15, 30 или 60 минут).
-     */
     private void showCalendarOfferDialog(String name, String address, String payment,
                                          int finalPrice, long deliveryTimeMs) {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_calendar_offer, null);
@@ -539,20 +587,14 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    /**
-     * Передача события в системный календарь через Intent.ACTION_INSERT.
-     * Разрешения не требуются, а проверка resolveActivity защищает от краша,
-     * если приложения календаря нет на устройстве.
-     */
+    // Передаю событие в календарь через Intent, заранее проверяю resolveActivity, чтобы не упасть без приложения
     private void openSystemCalendar(String name, String address, String payment,
                                     int finalPrice, long beginTimeMs, int reminderMinutes) {
-        // Время начала и окончания (1 час) передаём в миллисекундах, не строкой
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(beginTimeMs);
         long startMs = cal.getTimeInMillis();
         long endMs = startMs + 60L * 60L * 1000L;
 
-        // Заголовок понятен сам по себе, даже если увидеть его в календаре через неделю
         String title = getString(R.string.calendar_title_fmt, address);
         String description = "Получатель: " + name
                 + "\nОплата: " + payment + " (" + finalPrice + " ₽)"
@@ -592,7 +634,7 @@ public class MainActivity extends AppCompatActivity {
         draftStorage.clearDraft();
         etName.setText("");
         etPhone.setText("");
-        etAddress.setText("");
+        etAddress.setText("", false);
         etComment.setText("");
         etPromo.setText("");
         selectedDeliveryTimeMs = 0L;
@@ -625,7 +667,7 @@ public class MainActivity extends AppCompatActivity {
         return getString(R.string.pay_card);
     }
 
-    private String getTextSafe(TextInputEditText editText) {
+    private String getTextSafe(EditText editText) {
         return editText.getText() != null ? editText.getText().toString() : "";
     }
 

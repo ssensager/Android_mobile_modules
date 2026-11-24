@@ -12,12 +12,14 @@
     <string name="error_name_empty">Введите имя получателя (минимум 2 буквы)</string>
 
     <string name="hint_phone">Телефон *</string>
-    <string name="helper_phone">Формат: +7 900 000-00-00</string>
-    <string name="error_phone_invalid">Введите корректный номер, например +7 900 123-45-67</string>
+    <string name="helper_phone">Формат: +7 (900) 000-00-00 (вводите просто цифры)</string>
+    <string name="error_phone_invalid">Введите номер полностью, например +7 (900) 123-45-67</string>
 
     <string name="hint_address">Адрес доставки *</string>
-    <string name="helper_address">Улица, дом, квартира</string>
+    <string name="helper_address">Начните вводить улицу — появится список подсказок</string>
     <string name="error_address_empty">Укажите улицу и номер дома (минимум 5 символов)</string>
+    <string name="btn_open_on_map">Проверить адрес на карте</string>
+    <string name="snackbar_no_maps">Приложение карт на устройстве не найдено</string>
 
     <string name="hint_comment">Комментарий курьеру (необязательно)</string>
     <string name="helper_comment">Подъезд, этаж, код домофона</string>
