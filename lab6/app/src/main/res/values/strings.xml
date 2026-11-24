@@ -34,6 +34,7 @@
     <string name="equipment_sets_count">Подходов: %1$d</string>
     <string name="equipment_last_set">Последний: %1$s кг × %2$d</string>
     <string name="btn_quick_add_set">+ Подход</string>
+    <string name="fab_add_set">Подход</string>
     <string name="fab_add_equipment">Тренажёр</string>
 
     <!-- Новый личный рекорд -->
