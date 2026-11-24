@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Открываю доступ только к каталогу кэша, куда сохраняю CSV для отправки -->
+<paths>
+    <cache-path
+        name="exports"
+        path="." />
+</paths>

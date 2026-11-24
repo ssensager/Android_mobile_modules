@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Основная спортивная палитра Deep Teal для светлой темы -->
+    <color name="brand_primary">#0F766E</color>
+    <color name="brand_on_primary">#FFFFFF</color>
+    <color name="brand_primary_container">#CCFBF1</color>
+    <color name="brand_on_primary_container">#0A3D39</color>
+
+    <color name="brand_secondary">#0D5C63</color>
+    <color name="brand_on_secondary">#FFFFFF</color>
+    <color name="brand_secondary_container">#D5EFEA</color>
+    <color name="brand_on_secondary_container">#0B3B3F</color>
+
+    <color name="surface_bg">#F3F7F6</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_variant">#E6F0EE</color>
+    <color name="outline_subtle">#CBDAD7</color>
+
+    <color name="text_primary">#11201E</color>
+    <color name="text_secondary">#4A6360</color>
+
+    <!-- Акцент для нового личного рекорда -->
+    <color name="pr_bg">#FEF3C7</color>
+    <color name="pr_stroke">#F59E0B</color>
+    <color name="pr_text">#92400E</color>
+
+    <color name="danger_text">#B91C1C</color>
+
+    <!-- Цвета графика динамики объёма -->
+    <color name="chart_grid">#DCE8E5</color>
+    <color name="chart_bar_regular">#48A9A1</color>
+    <color name="chart_bar_today">#0F766E</color>
+    <color name="chart_bar_empty">#D9E5E2</color>
+    <color name="chart_value_text">#0F766E</color>
+    <color name="chart_axis_text">#536D6A</color>
+</resources>

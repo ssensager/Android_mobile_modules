@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ПрогрессЗал</string>
+    <string name="subtitle_main">Трекер тренировок в зале</string>
+
+    <!-- Верхняя сводка прогресса -->
+    <string name="kpi_today_sets">Подходов сегодня</string>
+    <string name="kpi_today_volume">Объём сегодня</string>
+    <string name="kpi_best_record">Лучший рекорд</string>
+    <string name="kpi_volume_value">%1$s кг</string>
+    <string name="kpi_record_empty">—</string>
+    <string name="chart_title">Динамика объёма за 7 дней (кг)</string>
+    <string name="chart_empty_message">Пока нет подходов за последние 7 дней</string>
+
+    <!-- Поиск и фильтры -->
+    <string name="search_hint">Поиск тренажёра по названию…</string>
+    <string name="group_all">Все</string>
+    <string name="group_chest">Грудь</string>
+    <string name="group_back">Спина</string>
+    <string name="group_legs">Ноги</string>
+    <string name="group_shoulders">Плечи</string>
+    <string name="group_arms">Руки</string>
+
+    <!-- Пустое состояние -->
+    <string name="empty_filter_title">По вашему запросу ничего не найдено</string>
+    <string name="empty_filter_subtitle">Попробуйте изменить текст поиска или выбрать другую группу мышц.</string>
+    <string name="empty_all_title">Список тренажёров пока пуст</string>
+    <string name="empty_all_subtitle">Нажмите «+ Тренажёр», чтобы добавить первое упражнение и вести прогресс.</string>
+    <string name="btn_reset_filters">Сбросить фильтры</string>
+
+    <!-- Карточка тренажёра -->
+    <string name="equipment_pr_format">Рекорд: %1$s кг × %2$d</string>
+    <string name="equipment_no_sets">Пока нет подходов</string>
+    <string name="equipment_sets_count">Подходов: %1$d</string>
+    <string name="equipment_last_set">Последний: %1$s кг × %2$d</string>
+    <string name="btn_quick_add_set">+ Подход</string>
+    <string name="fab_add_equipment">Тренажёр</string>
+
+    <!-- Новый личный рекорд -->
+    <string name="pr_banner_title">Новый личный рекорд!</string>
+    <string name="pr_banner_with_delta">%1$s: %2$s кг × %3$d (+%4$s кг к прошлому)</string>
+    <string name="pr_banner_first">%1$s: первый рекорд %2$s кг × %3$d</string>
+    <string name="badge_pr">Рекорд</string>
+
+    <!-- Диалог добавления тренажёра -->
+    <string name="dialog_add_equipment_title">Новый тренажёр</string>
+    <string name="hint_equipment_name">Название тренажёра</string>
+    <string name="hint_muscle_group">Группа мышц</string>
+    <string name="hint_equipment_notes">Заметки по технике (необязательно)</string>
+    <string name="error_empty_name">Введите название тренажёра</string>
+
+    <!-- Быстрый ввод подхода -->
+    <string name="dialog_add_set_title">Новый подход</string>
+    <string name="hint_weight_kg">Вес, кг</string>
+    <string name="hint_reps">Повторения</string>
+    <string name="prefill_note">Подставил значения последнего подхода</string>
+    <string name="error_invalid_set">Укажите корректный вес (> 0) и повторения (> 0)</string>
+
+    <!-- Экран деталей тренажёра -->
+    <string name="detail_history_title">История подходов</string>
+    <string name="detail_empty_sets">Подходов ещё нет — добавьте первый, чтобы зафиксировать рекорд.</string>
+    <string name="detail_set_main">%1$s кг × %2$d повт.</string>
+    <string name="detail_set_volume">Объём: %1$s кг</string>
+    <string name="detail_delete_set_title">Удалить подход?</string>
+    <string name="detail_delete_set_message">Запись %1$s кг × %2$d будет удалена из истории.</string>
+    <string name="detail_delete_equipment_title">Удалить тренажёр?</string>
+    <string name="detail_delete_equipment_message">Тренажёр «%1$s» и все его подходы будут удалены без возможности восстановления.</string>
+
+    <!-- Меню и действия -->
+    <string name="action_export_csv">Экспорт в CSV</string>
+    <string name="action_cleanup_settings">Настройки автоочистки</string>
+    <string name="action_delete">Удалить</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="btn_add">Добавить</string>
+    <string name="btn_close">Закрыть</string>
+
+    <!-- Автоочистка -->
+    <string name="cleanup_dialog_title">Настройки автоочистки</string>
+    <string name="cleanup_dialog_subtitle">Устаревшие подходы и неиспользуемые фото очищаются по расписанию раз в сутки.</string>
+    <string name="cleanup_retention_label">Срок хранения истории</string>
+    <string name="cleanup_option_7">7 дней</string>
+    <string name="cleanup_option_30">30 дней</string>
+    <string name="cleanup_option_90">90 дней</string>
+    <string name="cleanup_option_180">180 дней</string>
+    <string name="cleanup_preview_loading">Подсчитываю устаревшие записи…</string>
+    <string name="cleanup_preview_found">Найдено подходов старше %1$d дн.: %2$d</string>
+    <string name="cleanup_preview_none">Записей старше %1$d дн. сейчас нет.</string>
+    <string name="cleanup_last_run_format">Последняя очистка: %1$s (удалено: %2$d)</string>
+    <string name="cleanup_never_run">Автоочистка ещё не запускалась</string>
+    <string name="btn_cleanup_now">Очистить сейчас</string>
+    <string name="cleanup_confirm_title">Подтвердите удаление</string>
+    <string name="cleanup_confirm_message">Будут удалены все подходы старше %1$d дн. (сейчас %2$d шт.) и связанные неиспользуемые фото. Продолжить?</string>
+    <string name="cleanup_done_toast">Очистка завершена: удалено подходов — %1$d, файлов — %2$d</string>
+    <string name="cleanup_prefs_saved">Срок хранения сохранён: %1$d дн.</string>
+    <string name="cleanup_channel_name">Автоочистка истории</string>
+    <string name="cleanup_channel_desc">Уведомления об удалении устаревших записей тренировок</string>
+    <string name="cleanup_notification_title">Автоочистка ПрогрессЗал</string>
+    <string name="cleanup_notification_text">Удалено подходов: %1$d и файлов: %2$d (старше %3$d дн.).</string>
+
+    <!-- Экспорт CSV -->
+    <string name="csv_share_chooser">Поделиться историей тренировок (CSV)</string>
+    <string name="csv_export_empty">История пуста — нечего выгружать в CSV.</string>
+    <string name="csv_export_error">Не удалось сформировать CSV: %1$s</string>
+</resources>
